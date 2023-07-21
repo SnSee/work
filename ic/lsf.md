@@ -33,8 +33,11 @@ bsub [-q <queue>] [-m <host>] [-o <log>] [-e <err.log>] [-cwd <working_directory
 # -Ip: 在当前shell交互
 # 引用jobid: %J
 
-# 查看所有任务
+# 查看当前用户所有任务
 bjobs 
+
+# 查看所有用户所有任务
+bjobs -u all -W
 
 # 查看指定任务
 bjobs [-w] [-l] <JOBID>
@@ -53,4 +56,14 @@ bhosts <queue>
 
 # 查看负载
 lsload [HOST_NAME]
+```
+
+IBM lsf log
+
+```sh
+# 记录任务状态日志路径
+tail -f $INSTALL/logdir/lsb.events
+
+# 记录任务结束状态日志路径
+tail -f $INSTALL/logdir/lsb.acct
 ```
