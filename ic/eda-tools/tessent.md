@@ -50,9 +50,9 @@ exit -f
 帮助文档
 
 ```text
-# 打开下面的链接, 在界面顶部搜索任意命令
-# 查看任意命令: 界面拉到底部，点击Parent Topic: Command Descriptions查看所有命令
-file:///eda-tools/mentor/tessent/doc/htmldocs/mgchelp.html#context=tshell_ref&topic=read_verilog
+file:///eda-tools/mentor/tessent/doc/index.html
+
+tcl命令: Tessent -> Tessent Shell Reference Manual
 ```
 
 ## 命令

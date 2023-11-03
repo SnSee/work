@@ -60,3 +60,9 @@ proc get_polygons_at_pos {lay cell_name layer_num x y} {
         puts $pi
     }
 }
+
+# gds转oasis，或者直接使用 $MGC_HOME/bin/gds2oasis
+proc gdsToOasis {gdsFile outFile} {
+    set L [layout create $gdsFile -dt_expand]
+    $L oasisout $outFile
+}
