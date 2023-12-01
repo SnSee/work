@@ -173,7 +173,7 @@ println(b)
 
 [示例](./scripts/flow_control.il)
 
-if, for, foreach, case, while
+if, for, foreach, case, while, case, cond, return
 
 <a id='procedure-syntax'></a>
 
@@ -271,8 +271,19 @@ mouseAddPt              # 记录鼠标左击位置
 
 ### Layout
 
-* geGetEditCellView: 获取正在编辑的cell view(相当于geGetEditRep)
+* dbOpenCellViewByType: 在内存中打开cell-view(重复调用为同一个对象)
+* deOpenCellView: 打开cell-view图形窗口
+* dbGetOpenCellViews: 获取所有内存中的cell-view
+* geGetEditCellView: 获取正在编辑的cell-view(相当于geGetEditRep)
 * geGetSelectedSet: 获取所有选中的图形对象(列表)
+
+```il
+; 只读模式打开layout cell-view
+dbOpenCellViewByType("lib_name" "cell_name" "layout")
+
+; 只读模式打开layout窗口
+deOpenCellView("lib_name" "cell_name" "layout" "maskLayout" list(0:0 500:600) "a")
+```
 
 [创建形状](./scripts/create_shapes.il)
 
@@ -290,6 +301,13 @@ obj->objType        // 字符串，dbObject类型
 # 直接搜索 Attributes of Cellviews 即可
 # 文档路径
 $ICAD_DIR/SKILL/Virtuoso Design Environment SKILL Reference/Attribute Retrieval and Modification Database Access Functions/Attributes of Cellviews
+```
+
+instance属性
+
+```c
+obj->xy             // instance坐标原点，需要注意的是在virtuoso和gdspy中这个值并不一致
+                    // 在 gdspy 或 calibredrv 中top cell的bbox起点都是(0, 0)，而 virtuoso 不是
 ```
 
 rect属性
