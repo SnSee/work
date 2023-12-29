@@ -1,21 +1,28 @@
 
 # verilog
 
+[知乎-语法](https://zhuanlan.zhihu.com/p/72008467)
+[菜鸟教程](https://www.runoob.com/w3cnote/verilog2-tutorial.html)
+
 模型假设
 
 > 模型假设（Modeling Assumptions）是指在建立电路仿真模型时所假设的一些条件和规定，这些条件和规定主要是为了保证该模型能够正确地进行仿真和验证，从而达到设计电路的目的。在 Verilog 文件的开头通常会列出该模型的假设条件和规定，方便使用者使用和理解该模型。常见的模型假设包括支持的仿真方式、支持的数据类型、模型中时序信息的处理方式、信号的响应特性等等。
 
-`timescale
+## 基础概念
+
+### `timescale
 
 ```verilog
 // 设置时间单位和精度
 // timeunit     : times 和 delays 时间单位
 // timeprecision: delay 精度，在 simulation 前 delay 值会被精确到该单位
 //                即使其他地方有更小的精度，也会精确到该单位
+// 如 `timescale 1ns / 1ps 表示verilog中时间单位是1纳秒，仿真时时间精度为1皮秒
 `timescale timeunit / timeprecision
+
 ```
 
-`define
+### `define
 
 ```verilog
 // 预处理指令，可以理解为 C 语言的 #define 宏
@@ -32,7 +39,7 @@ reg [7:0] sum;
 sum = `ADD(a,b);    // 调用加法宏函数计算 a 和 b 的和
 ```
 
-条件编译指令
+### 条件编译指令
 
 ```verilog
 `ifdef DEBUG_MODE
@@ -44,7 +51,7 @@ sum = `ADD(a,b);    // 调用加法宏函数计算 a 和 b 的和
 `endif
 ```
 
-定义模块
+### 定义模块
 
 ```verilog
 // D 触发器
@@ -63,7 +70,18 @@ module D_FF(CLK, D, Q);             // 定义模块(module)及端口(pin/port)
 endmodule
 ```
 
-always @
+### [赋值](https://zhuanlan.zhihu.com/p/625048683)
+
+#### assign
+
+assign 是持续赋值，主要适用于对 wire 类型的变量赋值
+
+```verilog
+// a, b, c 为三个 wire 类型变量，a, b 的任何变化都将随时反应到 c 上
+assign c = a & b;
+```
+
+### always @
 
 ```verilog
 // @ 符号被称为“敏感词”，用于指定变量的敏感事件，从而建立时序逻辑电路
@@ -79,7 +97,7 @@ always @(posedge clk)
 always @(a, b, c)
 ```
 
-数字表示方法
+### 数字表示方法
 
 ```verilog
 // 未设置位宽的数字
@@ -105,7 +123,7 @@ always @(a, b, c)
 -8'd6           // 8-bit 十进制负数
 ```
 
-parameter
+### parameter
 
 ```verilog
 module test();
@@ -125,7 +143,7 @@ module test();
 endmodule
 ```
 
-===
+### ===
 
 ```verilog
 // === 不仅会比较值，还会比较数据类型和位宽，都相同返回 true，否则 false
@@ -142,7 +160,7 @@ module example(input [3:0] A, input [3:0] B);
 endmodule
 ```
 
-内置门
+### 内置门
 
 ```verilog
 // x: 信号值未知或未定义
@@ -157,4 +175,175 @@ xnor x1(out, in1, in2);         // 同或门
 
 not n1(out1, out2, in);
 buf b1(out1, out2, in);
+```
+
+## 设置延迟(delay)
+
+[延迟模型](https://www.runoob.com/w3cnote/verilog2-delay-type.html)
+
+[specify](https://www.runoob.com/w3cnote/verilog2-specify.html)
+
+### IOPATH
+
+IOPATH 是点到点的延迟，如 input-pin => output-pin
+
+test.sdf
+
+```sdf
+(DELAYFILE
+  (SDFVERSION "OVI 3.0")
+  (DIVIDER .)
+  (TIMESCALE 1ns)
+  (CELL
+    (CELLTYPE "and2")
+    (INSTANCE test.ia)
+    (DELAY
+      (ABSOLUTE
+        (IOPATH a c (3)(3))
+        (IOPATH b c (4)(4))
+      )
+    )
+  )
+)
+```
+
+test.v
+
+```verilog
+`timescale 1ns / 1ns    // 时间单位设为 1 纳秒
+
+module and2(a, b, c);
+    input a, b;
+    output c;
+
+    // 指定路径延时信息（会被sdf中的值覆盖）
+    specify
+        (a => c) = (1.0, 2.0);  // 上升延时 1，下降延时 2
+        (b => c) = (1.0, 2.0);
+    endspecify
+
+    and(c, a, b);
+endmodule
+
+module test();
+    reg a, b;
+    wire c;
+    initial begin
+        $sdf_annotate("./test.sdf");    // 导入 sdf 文件，覆盖/反标specify中指定的延时
+        a = 1'b0;
+        b = 1'b1;
+    #5  a = 1'b1;                       // 5 个时间单位后将 a 设为 1
+    #5  b = 1'b0;                       // 再过 5 个时间单位后将 b 设为 1
+    end
+
+    initial #50 $finish;                // 50 个时间单位后退出
+
+    and2 ia(.a(a), .b(b), .c(c));
+
+endmodule
+```
+
+运行命令
+
+```sh
+vcs -kdb -debug_access+all test.v
+./simv -verdi
+```
+
+结果
+
+![delay](./pic/verilog_delay_sketch.png)
+
+### setup/hold
+
+setup/hold 图解: 示意图为相对于时钟(Clock)上升沿的setup/hold，setup表示从信号稳定时到时钟上升沿时间，hold表示从时钟上升沿到信号开始改变时间，在 **tSetup + tHold** 时间窗口内，信号需要保持稳定。更详细解释参考: manuals/ic/eda-tools/PrimeTime/PT_STA_Tool.pdf
+
+![setup_hold](./pic/setup_hold.jpg)
+
+test.sdf
+
+```sdf
+(DELAYFILE
+  (SDFVERSION "OVI 3.0")
+  (DIVIDER .)
+  (TIMESCALE 1ns)
+  (CELL
+    (CELLTYPE "and2")
+    (INSTANCE test.ia)
+    (TIMINGCHECK
+        (SETUP c (posedge clk) (6:6:6))     // 只设置clk上升沿的setup
+        (HOLD c (posedge clk) (6:6:6))      // 只设置clk上升沿的setup
+
+        // 带有条件的 SETUP/HOLD，COND 需要和 verilog specify $setup/$hold 中 &&& 后边的字符串一致
+        (SETUP c (COND symbol_name1 clk) (6:6:6))
+        (HOLD c (COND symbol_name2 clk) (6:6:6))
+    )
+  )
+)
+```
+
+test.v
+
+```verilog
+`timescale 1ns / 1ns
+
+module and2(a, b, c, clk);
+    input a, b, clk;
+    output reg c;
+
+    wire symbol_name1;
+    wire symbol_name2;
+    assign symbol_name1 = a ? 1'b0 : 1'b1;
+    assign symbol_name2 = a ? 1'b0 : 1'b1;
+
+    parameter C_DELAY = 5;          // 定义 c 相对于时钟延时
+
+    always @(clk) begin             // 时钟改变时改变 c 值
+    // always @(posedge clk) begin  // 只在时钟上升沿修改
+    // always @(negedge clk) begin  // 只在时钟下降沿修改
+        #C_DELAY c = a & b;
+        $display("%b %b %b", a, b, c);
+    end
+
+    // 指定 setup/hold 延时信息（会被sdf中的值覆盖）
+    specify
+        // 如果 c 跟随时钟下降沿变化且 c 的setup值大于 CLK_SW - C_DELAY, 
+        // 即 c 在 tSetup 时间窗口内发生改变，则有 violation
+        $setup(c, posedge clk, 2);          // 设置clk上升沿时setup
+        // $setup(c, posedge clk, 6);       // 会有setup violation
+
+        // 如果 c 跟随时钟上升沿变化且 c 的hold值大于 C_DELAY,
+        // 即 c 在 tHold 时间窗口内发生改变，则有 violation
+        $hold(posedge clk, c, 2);           // 设置clk上升沿hold
+        // $hold(posedge clk, c, 6);        // hold violation
+
+        // 带有条件(COND)的 setup/hold
+        $setup(c, clk &&& symbol_name1, 2);  // clk变化且symbol_name1为1时，设置setup值
+        $hold(clk &&& symbol_name2, c, 2);   // clk变化且symbol_name2为1时，设置hold值
+    endspecify
+
+endmodule
+
+module test();
+    reg a, b;
+    wire c;
+
+    parameter CLK_SW = 10;              // 定义时钟翻转间隔
+
+    reg clk;
+    initial begin
+        $sdf_annotate("./test.sdf");    // 导入 sdf 文件，覆盖/反标specify中指定的延时
+        clk = 0;
+        a = 1'b0;
+        b = 1'b1;
+        forever begin
+            a = ~a;
+            #CLK_SW clk = ~clk;         // 定义时钟
+        end
+    end
+
+    initial #100 $finish;
+
+    and2 ia(.a(a), .b(b), .c(c), .clk(clk));
+endmodule
 ```
