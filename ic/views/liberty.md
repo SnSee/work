@@ -3,7 +3,7 @@
 
 ## 概念
 
-internal_power
+### internal_power
 
 > internal_power表示内部功耗。
 >
@@ -11,7 +11,7 @@ internal_power
 >
 > Liberty文件中的internal_power部分描述了电路中各个组件的内部功耗特性，包括静态功耗（在电路处于稳定状态时产生的功耗）和动态功耗（在电路进行切换时产生的功耗）。这些功耗数据可以用于电路仿真、功耗分析和优化等应用。
 
-default_cell_leakage_power
+### default_cell_leakage_power
 
 > default_cell_leakage_power（默认单元漏电功率）是电子设计自动化（EDA）工具中使用的一种指标。它用于描述集成电路设计中使用的默认逻辑单元（例如标准单元库中的基本逻辑门）在非开关状态下的漏电功耗。
 >
@@ -21,7 +21,7 @@ default_cell_leakage_power
 >
 > 在实际的IC设计中，设计人员可以根据具体需求和应用场景，通过对默认单元漏电功率进行调整、优化和验证，以达到不同功耗目标和电源管理策略的要求。
 
-leakage_power
+### leakage_power
 
 > leakage_power（漏电功率）指的是集成电路在非开关状态下产生的功耗。当电路处于稳定状态且没有输入变化时，由于微小的漏电流引起的功耗称为漏电功耗。
 >
@@ -29,7 +29,7 @@ leakage_power
 >
 > 漏电功耗通常在制程和器件设计阶段就可以进行估计或测量，并在Liberty文件中进行描述。减少漏电功耗是IC设计中重要的目标之一，以提高芯片的功耗效率和延长电池寿命。在设计过程中，采用低漏电功耗技术、优化电源和地线布局以及使用合适的电源管理策略等方法可以降低漏电功耗。
 
-default_cell_leakage_power 和 leakage_power 区别和联系
+### default_cell_leakage_power 和 leakage_power 区别和联系
 
 > 区别：
 >
@@ -43,7 +43,7 @@ default_cell_leakage_power 和 leakage_power 区别和联系
 >
 > 总结而言，"default_cell_leakage_power"是一个默认单元的漏电功耗的初始估计值，而"leakage_power"则更具体地表示整个电路或特定组件在实际工作状态下的漏电功耗。对于更准确的功耗分析和优化，通常需要基于实际电路进行具体的估算和仿真。
 
-related_pg_pin
+### related_pg_pin
 
 > related_pg_pin（相关的功耗引脚）是Liberty文件中的一个属性，用于描述与特定电路组件相关联的功耗引脚。
 >
@@ -51,7 +51,7 @@ related_pg_pin
 >
 > 通过将功耗引脚之间建立相关性，可以更准确地描述电路组件之间的功耗传递和相互作用。这对于进行功耗分析、时序分析以及电路级优化非常重要。通过定义相关的功耗引脚，可以在Liberty文件中捕捉到电路组件之间的正确的功耗关系，以提供准确的模型和仿真结果。
 
-power_lut_template
+### power_lut_template
 
 > power_lut_template（功耗查找表模板）是Liberty文件中用于描述电路组件功耗的一种方法。它是一种基于查找表的功耗建模技术，在电路级别对组件的功耗进行近似和表示。
 >
@@ -61,7 +61,7 @@ power_lut_template
 >
 > 需要注意的是，功耗查找表模板是一种近似的建模方法，可能会引入一定的误差。在实际设计中，可以根据具体的需求和精度要求选择合适的模型方法来描述电路组件的功耗行为。
 
-transition
+### transition
 
 > "Transition" 是指信号从一个稳态值过渡到另一个稳态值的过程。在数字电路中，信号的过渡通常是指从低电平（例如 0）到高电平（例如 1）或从高电平到低电平的变换。
 >
@@ -73,7 +73,7 @@ transition
 >
 > 因此，"transition" 表示信号从一个稳态值到另一个稳态值的变化过程，并且在数字电路设计中是一个重要的参数。它直接影响着电路的性能、功耗和可靠性等方面。
 
-pg_pin
+### pg_pin
 
 > "pg_pin" 是电子设计中常见的术语，指的是 "Power Ground Pin"，即电源接地引脚。
 >
@@ -82,3 +82,7 @@ pg_pin
 > 通常，芯片或集成电路上的每个功能模块都需要连接到电源引脚和接地引脚才能正常工作。这些引脚通常被指定为 "pg_pin"，以便在设计和布局过程中正确地连接电源和接地。在 PCB（Printed Circuit Board）设计中，也经常会使用 "pg_pin" 来指代与电源和接地相关的引脚。
 >
 > 正确连接和布局 "pg_pin" 对于电路的性能、噪声抑制、电气可靠性和 EMI（Electromagnetic Interference）控制等方面至关重要。因此，在设计和布局过程中，应仔细处理 "pg_pin"，遵循相关的电路规范和最佳实践。
+
+### slew_derate_from_library
+
+工艺比较落后时测量 slew 时，采用的 threshold 一般是 10% 和 90%，随着工艺变好，30%-70% 之间基本可以认为是线性的(linear)，所以现在生成liberty时一般就用 30% 和 70% 的值，但是要将该值翻倍，等效 10% 和 90%。所以延迟表中的值要乘以 **slew derate factor**(即 0.5)，才是 30% 和 70% 对应的结果。如果没有该属性(默认为1)，则延迟表中的值就是设置的值(slew_lower_threshold_pct_fall等)。

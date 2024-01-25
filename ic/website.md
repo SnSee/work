@@ -23,6 +23,8 @@ IEEE Standard 编号格式：number-year（如：1450.6.2-2014）
 
 [芯片设计流程及工具简介](https://zhuanlan.zhihu.com/p/384854295)
 
+[Cadence工具简介](https://blog.eetop.cn/blog-6503-5657804.html)
+
 [数字ic全流程介绍](https://zhuanlan.zhihu.com/p/85063131)
 
 [STA静态时序分析详细解析](https://bbs.eetop.cn/thread-876638-1-1.html)

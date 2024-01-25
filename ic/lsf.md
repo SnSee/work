@@ -7,11 +7,15 @@
 
 [安装openlava](https://www.cnblogs.com/alittlemc/p/16646098.html)
 
-> LSF（Load Sharing Facility）采用了RPC（Remote Procedure Call）机制来实现任务调度和管理等功能。具体来说，LSF使用了一种基于RPC的通信协议，称为LSF RPC Protocol。
->
-> 在LSF中，各个组件之间可以通过RPC进行通信和交互，比如集群节点和集中调度服务器之间的通信。LSF RPC Protocol使用了TCP/IP作为传输层协议，并使用二进制数据格式进行编码和解码。它定义了一系列标准的RPC接口和协议规范，用于实现任务提交、资源分配、作业状态查询等操作。
->
-> 通过LSF RPC Protocol，LSF能够快速、高效地处理大量的作业和任务，并提供了丰富的调度和管理功能，例如动态资源分配、负载均衡和故障恢复等。因此，LSF已被广泛应用于科学计算、工程设计以及云计算等领域。
+LSF（Load Sharing Facility）采用了RPC（Remote Procedure Call）机制来实现任务调度和管理等功能。具体来说，LSF使用了一种基于RPC的通信协议，称为LSF RPC Protocol。
+
+在LSF中，各个组件之间可以通过RPC进行通信和交互，比如集群节点和集中调度服务器之间的通信。LSF RPC Protocol使用了TCP/IP作为传输层协议，并使用二进制数据格式进行编码和解码。它定义了一系列标准的RPC接口和协议规范，用于实现任务提交、资源分配、作业状态查询等操作。
+
+通过LSF RPC Protocol，LSF能够快速、高效地处理大量的作业和任务，并提供了丰富的调度和管理功能，例如动态资源分配、负载均衡和故障恢复等。因此，LSF已被广泛应用于科学计算、工程设计以及云计算等领域。
+
+## 注意事项
+
+* job 超过一定时间(一般1小时)就会在内存中被清除，通过 bjobs \<jobid\> 方式查询不到(显示为not found)，在 lsb.events 日志中最终状态为 JOB_CLEAN
 
 ## 进阶使用方法
 
