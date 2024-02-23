@@ -42,6 +42,22 @@ $L exists layer 15          # 查看是否有某一层次，1表示有，0表示
 $L layernames 15 M1         # 设置layer名称
 $L layernames 15            # 查看layer名称
 $L layernames               # 查看所有layer名称，没有名称的显示为layer值
+
+##################################################
+# layer 间操作
+##################################################
+# 从 layer_main 中除去 layer_cut 后剩余的部分保存到 layer_out
+$L NOT $layer_main $layer_cut $layer_out
+
+# 通过 layer_con 连接 layer1 和 layer2，保存到 layer_out
+# 注意： layer_out 原有多边形会被清空
+$L connect $layer1 $layer2 by $layer_con
+foreach polygons [$L iterator poly $cellName $layer1 range 0 end] {
+    set x0 [lindex $polygons 0]
+    set y0 [lindex $polygons 1]
+    set exed [$L extractNet $cellName -geom $layer1 $x0 $y0 -hier 0 -export $layer_out]
+    puts "$x0, $y0 -> $layer_out: $exed"
+}
 ```
 
 #### iterator
@@ -70,7 +86,7 @@ set polygons [$L iterator poly <cell_name> <layer_number> range 0 end]
 # polygons格式如下
 # { {x1 y1 x2 y2 ... xn yn} ...}
 foreach poly $polygons {
-    foreach xoy $p {
+    foreach xoy $poly {
         # 多边形顶点的x或y值
         puts [expr $xoy * $unit]
     }
@@ -85,3 +101,13 @@ foreach poly $polygons {
 # 返回值为n个 {layer x1 y1 ... xn yn} idx v|e distance {x y}
 $L query polygon <cell_name> 0 100 <x> <y> -inside
 ```
+
+#### tips
+
+#### 获取 pin 对应的多层 polygons
+
+1. 通过 **NOT** 命令剪切 metal layers，导出为新的 metal layers
+2. 通过 **connect** 命令连接新的 metal layers
+3. 通过 **iterator text** 命令获取 pin 名称及位置(pin_label_pos)
+4. 通过 **extractNet** 命令根据 pin_label_pos 追溯 polygons，导出到 layer_out
+5. 通过 **iterator poly** 命令获取 layer_out 对应 polygons

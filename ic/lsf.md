@@ -48,6 +48,8 @@ bjobs [-w] [-l] <JOBID>
 
 # 终止指定任务
 bkill <JOBID>
+# 终止当前用户所有任务
+bkill 0
 
 # 查看所有队列
 bqueues

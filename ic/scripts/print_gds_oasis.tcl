@@ -68,14 +68,34 @@ proc print_texts {L cell_name layer} {
     }
 }
 
-proc print_polys {L cell_name layer} {
-    set unit [$L units user]
+proc print_polys {ori_polys cell_name layer unit} {
     set polys [list]
-    foreach poly [$L iterator poly $cell_name $layer range 0 end] {
+    foreach poly $ori_polys {
         lappend polys "CELL: $cell_name LAYER: $layer POLY: [sort_points [trans_unit $poly $unit]]"
     }
     foreach poly [lsort $polys] {
         puts $poly
+    }
+}
+
+proc print_layer_polys {L cell_name layer} {
+    set unit [$L units user]
+    set polys [$L iterator poly $cell_name $layer range 0 end]
+    if {[string first "LAYER" $polys] < 0} {
+        # 所有 polygon 都在同一层
+        print_polys $polys $cell_name $layer $unit
+    } else {
+        # polygon 在不同层
+        foreach sub_polys $polys {
+            set layer_desc [lindex $sub_polys 0]
+            if {[regexp {LAYER ([0-9.]+)} $layer_desc match layer_num]} {
+                set _layer "$layer\($layer_num\)"
+            } else {
+                set _layer "$layer\(-1\)"
+            }
+            set _polys [list [lrange $sub_polys 1 [llength $sub_polys]]]
+            print_polys $_polys $cell_name $_layer $unit
+        }
     }
 }
 
@@ -94,7 +114,7 @@ proc print_cell {L cell_name {recursive false}} {
     set unit [$L units user]
     foreach layer [lsort [$L layers]] {
         print_texts $L $cell_name $layer
-        print_polys $L $cell_name $layer
+        print_layer_polys $L $cell_name $layer
         print_wires $L $cell_name $layer
     }
     if {$recursive} {

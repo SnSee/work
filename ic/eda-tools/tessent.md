@@ -1,6 +1,14 @@
 
 # tessent
 
+帮助文档
+
+```text
+file:///eda-tools/mentor/tessent/doc/index.html
+
+tcl命令: Tessent -> Tessent Shell Reference Manual
+```
+
 ## 示例
 
 ### verilog 转换为 cell library
@@ -20,6 +28,28 @@ exit
 ```
 
 ### ATPG
+
+#### lcVerify
+
+帮助文档: Tessent Shell Reference Manual -> Verification of Tessent Simulation Models
+
+Tessent单元库的功能验证包括模拟和测试库模型，并将这些模型与Verilog源模块进行比较，以确认并行功能。当功能不匹配时，仿真模型验证失败，应用程序返回失败模型的仿真不匹配。
+
+lcVerify 通过以下步骤进行验证:
+
+1. 使用Tessent FastScan为仿真模型生成和模拟测试模式。
+2. 使用 **ModelSim** 模拟Verilog源库，使用相同的Tessent FastScan测试模式。
+3. 比较仿真模型和Verilog源的仿真结果，并输出一个日志文件，详细说明仿真不匹配和统计信息，可用于改进仿真模型的可测试性和性能。
+
+注意:
+
+* lcVerify 需要安装 ModelSim 来进行仿真。
+
+```bash
+lcVerify test.mdt test.v
+```
+
+#### 自定义 dofile
 
 ```bash
 tessent -shell -dofile <dofile> -log tessent.log
@@ -45,14 +75,6 @@ try {
 } on error { code options } {
 }
 exit -f
-```
-
-帮助文档
-
-```text
-file:///eda-tools/mentor/tessent/doc/index.html
-
-tcl命令: Tessent -> Tessent Shell Reference Manual
 ```
 
 ## 命令
