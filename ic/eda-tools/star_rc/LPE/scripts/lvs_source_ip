@@ -1,0 +1,19 @@
+## ENVIRONMENT SETTING ##
+setenv TECHDIR /ic-library/samsung/ln04lpp/pdk/LN04LPP_CalibreLVS_S00-V1.0.8.0
+setenv TECHDIR_xACT /ic-library/samsung/ln04lpp/pdk/LN04LPP_Star-RCXT_TR-Level_S00-V1.0.8.0
+setenv LAYOUT_SYSTEM    GDSII
+setenv SOURCE_SYSTEM    SPICE
+setenv LAYOUT_PRIMARY   $cell
+setenv SOURCE_PRIMARY   $cell
+setenv LAYOUT_PATH      $gds_file
+setenv SOURCE_PATH      $cdl_file
+setenv LVS_REPORT       $cell.lvs_rpt
+
+## DO NOT MODIFY HERE ##
+setenv CUSTOM_INCLUDE FALSE
+
+## FOR SETTING BEOL STACK ##
+setenv BEOL_STACK 14M_3Mx_2Fx_7Dx_2Iz_LB
+
+## other setting from pdk
+...

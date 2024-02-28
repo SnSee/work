@@ -1,0 +1,60 @@
+CALIBRE_RUNSET        : {cell}.lvs_rpt
+CALIBRE_QUERY_FILE    : query.input
+CALIBRE_PDBA_FILE     : pdsp
+BLOCK                 : {cell}
+TCAD_GRD_FILE         : {tcad_grd_file}
+MAPPING_FILE          : {mapping_file}
+COUPLING_REPORT_FILE  : {cell}.cc
+OPERATING_TEMPERATURE : {base_temperature}
+SELECTED_CORNERS      : {corners}
+NETLIST_FILE          : {cell}.spf
+SPICE_SUBCKT_FILE     : {cdl_file}
+NETLIST_COMMENTS_FILE : star_cmd
+CORNERS_FILE          : ./corner_file
+
+TRANSLATE_RETAIN_BULK_LAYERS : CONLY ALL_TO_CLOSEST_CONTACT
+NETLIST_PASSIVE_PARAMS       : YES
+IGNORE_CAPACITANCE           : ALL RETAIN_GATE_DIFFUSION_COUPLING
+EXTRACTION                   : RC
+COUPLE_TO_GROUND             : NO
+COUPLING_ABS_THRESHOLD       : 0
+COUPLING_REL_THRESHOLD       : 0
+NETLIST_FORMAT               : NETNAME
+SKIP_CELLS                   : !*
+XREF                         : YES
+NETLIST_INSTANCE_SECTION     : YES
+REDUCTION                    : YES
+CASE_SENSITIVE               : YES
+POWER_EXTRACT                : YES
+EXTRACT_VIA_CAPS             : YES
+EXTRACT_RES_BODY_COUPLING    : YES
+HN_NETLIST_SPICE_TYPE        : <device> X
+REFERENCE_DIRECTION          : VERTICAL
+TRANSLATE_FLOATING_AS_FILL   : YES
+MULTIGATE_MODELS             : YES
+DPT                          : YES
+WIDE_DEVICE_TERM_RESISTANCE  : RES
+MOS_GATE_DELTA_RESISTANCE    : YES
+NETLIST_NODENAME_NETNAME     : YES
+XREF_SWAP_MOS_SD_PROPERTY    : asej adej
+XREF_SWAP_MOS_SD_PROPERTY    : psej pdej
+XTOR_GPD                     : NO
+SIMULTANEOUS_MULTI_CORNER    : YES
+NET_TYPE                     : SCHEMATIC
+CELL_TYPE                    : SCHEMATIC
+NETS                         : * !VNW !VPW
+NETLIST_CONNECT_SECTION      : YES
+NETLIST_NODE_SECTION         : NO
+NETLIST_COMMENTED_PARAMS     : YES
+NETLIST_INSTANCE_SECTION     : YES
+SHORT_PINS                   : YES
+POWER_REDUCTION              : YES
+NETLIST_MERGE_SHORTED_PORTS  :  YES
+NETLIST_GROUND_NODE_NAME     : VSS
+NETLIST_REMOVE_DANGLING_BRANCHES              :  YES
+TRENCH_CONTACT_VIRTUAL_VIA_SEGMENTATION_RATIO : 1
+
+*SKIP_PCELLS                   : vncap_rf* vncap_2t* vncap_base* egncap_rf* egncap_2t* egncap* ncap_rf* ncap_2t* ncap* hdvncap_base* hdvncap_2t*
+*COUPLE_TO_PCELL_PINS          : YES AUTOMATIC_CG_HANDLING
+*SKIP_PCELL_LAYERS_FILE        : /user/ss04lpp/PDK/S00-V1.0.6.0/Common_Platform_PROC-Star-RCXT_TR-Level_sec220531_0218/LN04LPP_Star-RCXT_TR-Level_S00-V1.0.6.0/template/skip_pcell_layers_file.txt
+*RETAIN_CAPACITANCE_CAP_MODELS : vncap_rf vncap_2t vncap egncap_rf egncap_2t egncap ncap_rf ncap_2t ncap hdvncap_2t hdvncap

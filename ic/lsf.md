@@ -45,6 +45,7 @@ bjobs -u all -W
 
 # 查看指定任务
 bjobs [-w] [-l] <JOBID>
+-noheader: 不显示表头
 
 # 终止指定任务
 bkill <JOBID>

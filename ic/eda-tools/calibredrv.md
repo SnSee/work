@@ -1,7 +1,7 @@
 
 # calibredrv
 
-打开calibredrv界面通过 **help -> Open User Manual** 查看用户手册
+打开calibredrv界面通过 **help -> Open User Manual** 查看用户手册，或者查看同级或子目录中是否有 doc* 文件
 
 [参考脚本](../scripts/calibredrv.tcl)
 
@@ -21,9 +21,25 @@ calibredrv test.tcl         # 执行脚本中的命令后退出
 
 > **注意**
 
-* 通过calibredrv提供的tcl函数获取的数据单位为 **database unit (dbu)**，需要乘以系数才是实际的数据, 系数可以通过 **$L units user** **(uunit)** 获取
+* 通过calibredrv提供的tcl函数获取的数据单位为 **database unit (dbu)**，需要乘以系数 **(uunit)** 才是实际的数据(单位: 微米), 系数可以通过 **$L units user** 获取，**不要直接修改dbu/uunit，而是通过修改 units microns 间接修改**，否则可能会导致单位错乱
 
 ## 命令
+
+### 长度单位
+
+* dbu: database unit，calibredrv中最小长度，默认单位为 1e-9米，尺寸信息一般都是这个单位，如 1 微米表示为 1e-6/1e-9 = 1000dbu，小于这个尺寸的数值会被四舍五入，如 1e-9 和 1.4e-9 都是 1dbu.
+
+```tcl
+set L [layout create]
+
+# 1 微米包含多少个 dbu (即精度)
+$L units microns
+# 如：设置 1 微米包含 x 个 dbu
+# 则：1dbu = 1e-6/x 米，1uunit = 1dbu/1e-6 = 1/x
+$L units microns 100
+puts [$L units database]        # 1e-8
+puts [$L units user]            # 1e-2
+```
 
 ### Layout 命令
 

@@ -1,0 +1,21 @@
+#!/bin/csh -f
+set cell                = CUDBSVT4_MUXI3AOIM8_1_VDD
+set gds_file            = ./db/CUDBSVT4_MUXI3AOIM8_1_VDD.gds
+set cdl_file            = ./db/CUDBSVT4_MUXI3AOIM8_1_VDD.cdl
+set base_corner         = base_125
+set base_temperature    = 125
+set target_corner       = tt25c
+set target_temperature  = 25
+set corners             = "$base_corner $target_corner"
+set workspace           = ./ws
+set lvs_rule_file       = /ic-library/samsung/ln04lpp/pdk/LN04LPP_CalibreLVS_S00-V1.0.8.0/LVS/calibre.run
+set tcad_grd_file       = /ic-library/samsung/ln04lpp/pdk/LN04LPP_Star-RCXT_TR-Level_S00-V1.0.8.0/14M_3Mx_2Fx_7Dx_2Iz_LB/ln04lpp_14M_3Mx_2Fx_7Dx_2Iz_LB_nominal_detailed.nxtgrd
+set mapping_file        = /ic-library/samsung/ln04lpp/pdk/LN04LPP_Star-RCXT_TR-Level_S00-V1.0.8.0/14M_3Mx_2Fx_7Dx_2Iz_LB/ln04lpp_14M_3Mx_2Fx_7Dx_2Iz_LB_nominal_CalLVS.map
+
+
+# set tools
+setenv CALIBRE_HOME /eda-tools/mentor/calibre201902/aoi_cal_2019.2_35.24
+setenv STARRC_PATH /eda-tools/synopsys/starrc_vT-2022.03-SP5-3/starrc/T-2022.03-SP5-3
+set path=($CALIBRE_HOME/bin $path)
+set path=($STARRC_PATH/bin $path)
+set path=($STARRC_PATH/amd64_starrc/bin $path)

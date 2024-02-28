@@ -45,3 +45,7 @@ module test;
     end
 endmodule
 ```
+
+## 对比 netlist 检查逻辑功能是否一致
+
+如对比 verilog 网表和 spice/cdl 网表

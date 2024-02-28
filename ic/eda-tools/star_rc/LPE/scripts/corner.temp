@@ -1,0 +1,7 @@
+CORNER_NAME: {base_corner}
+TCAD_GRD_FILE: {tcad_grd_file}
+OPERATING_TEMPERATURE: {base_temperature}
+
+CORNER_NAME: {target_corner}
+TCAD_GRD_FILE: {tcad_grd_file}
+OPERATING_TEMPERATURE: {target_temperature}

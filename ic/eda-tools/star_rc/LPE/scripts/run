@@ -1,0 +1,73 @@
+#!/bin/csh -f
+set cell_env_file = $1
+source $cell_env_file
+
+# translate relative path to absolate path
+set my_file         = `readlink -f $0`
+set my_dir          = `dirname $my_file`
+set star_cmd_temp   = "$my_dir/star_cmd.temp"
+set corner_temp     = "$my_dir/corner.temp"
+set lvs_source      = "$my_dir/lvs_source_ip"
+set query_input     = "$my_dir/query.input"
+
+set lvs_rule_file   = `readlink -f $lvs_rule_file`
+set cdl_file        = `readlink -f $cdl_file`
+set gds_file        = `readlink -f $gds_file`
+set tcad_grd_file   = `readlink -f $tcad_grd_file`
+set mapping_file    = `readlink -f $mapping_file`
+set workspace       = `readlink -f $workspace`
+
+if(! -e $workspace) then
+    mkdir $workspace
+endif
+cd $workspace
+
+
+# clear
+set spf = "$cell.spf.$target_corner"
+rm -rf LVS_FAIL LPE_FAIL $spf
+
+
+# deploy check environment
+cp $star_cmd_temp star_cmd
+set escape_tcad = `echo $tcad_grd_file | sed 's/\//\\\//g'`
+set escape_map = `echo $mapping_file | sed 's/\//\\\//g'`
+set escape_cdl = `echo $cdl_file | sed 's/\//\\\//g'`
+sed -i "s/{tcad_grd_file}/$escape_tcad/g"               star_cmd
+sed -i "s/{mapping_file}/$escape_map/g"                 star_cmd
+sed -i "s/{cdl_file}/$escape_cdl/g"                     star_cmd
+sed -i "s/{base_temperature}/$base_temperature/g"       star_cmd
+sed -i "s/{corners}/$corners/g"                         star_cmd
+sed -i "s/{cell}/$cell/g"                               star_cmd
+
+cp $corner_temp corner_file
+sed -i "s/{tcad_grd_file}/$escape_tcad/g"               corner_file
+sed -i "s/{base_temperature}/$base_temperature/g"       corner_file
+sed -i "s/{target_temperature}/$target_temperature/g"   corner_file
+sed -i "s/{base_corner}/$base_corner/g"                 corner_file
+sed -i "s/{target_corner}/$target_corner/g"             corner_file
+
+
+# LVS
+source $lvs_source
+calibre -lvs -hier -turbo $lvs_rule_file >& calibre.log
+if ! -f "calibre.log" then
+    touch LVS_FAIL
+    exit -1
+else
+    set result = `egrep "^LVS completed. \w+\. See report" calibre.log | awk '{print $3}'`
+    if $result != "CORRECT." then
+        touch LVS_FAIL
+        exit -1
+    endif
+endif
+
+
+# LPE
+cp $query_input query.input
+calibre -query_input query.input -query svdb
+StarXtract star_cmd
+if ! -f $spf then
+    touch LPE_FAIL
+    exit -1
+endif
