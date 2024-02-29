@@ -9,7 +9,7 @@
 |verilog    | gate-level/rtl 网表 | k库或design                   | slang-verilog
 |liberty    | 时序及功耗信息       | k库                          | libertyParser
 |db         | 时序及功耗信息       | lc_shell 基于liberty 生成    | NA
-|cdl        | 前仿网表              | si导出(ICADVM)                 | regex
+|cdl        | 前仿网表              | si导出schematic(ICADVM)     | regex
 |spice      | 后仿网表              | StarXtract抽取              | regex
 |lef        | 物理信息              | abstract基于gds和工艺库抽取    | lefdef
 |ndm        | ?                     | icc2整合gds/lef/liberty等 | icc2_lm_shell

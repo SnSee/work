@@ -1,0 +1,25 @@
+#!/bin/csh -f
+set cell_env_file = $1
+source $cell_env_file
+
+# translate relative path to absolate path
+set my_file         = `readlink -f $0`
+set my_dir          = `dirname $my_file`
+set si_env_temp     = "$my_dir/si.env.temp"
+set workspace       = `readlink -f $workspace`
+set cds_lib         = `readlink -f $cds_lib`
+
+if(! -e $workspace) then
+    mkdir $workspace
+endif
+cd $workspace
+
+# deploy check environment
+# ln -sf $cds_lib
+cp $si_env_temp si.env
+sed -i "s/{lib_name}/$lib_name/g"       si.env
+sed -i "s/{cell_name}/$cell_name/g"     si.env
+
+# export cdl
+si -batch -cdslib $cds_lib
+# si -batch -command netlist

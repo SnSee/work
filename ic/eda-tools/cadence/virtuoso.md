@@ -40,6 +40,10 @@ cdl: File -> Import -> Spice
 
 导出view
 
+[命令导出gds](./cadence.md#导出gds)
+[命令导出cdl]()
+[命令导出lef]()
+
 ```text
 gds: File -> Export -> Stream
     Stream File: 要导出的gds文件
