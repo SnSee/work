@@ -1,0 +1,31 @@
+#!/bin/csh -f
+set cell_env_file = `readlink -f $1`
+source $cell_env_file
+
+# translate relative path to absolate path
+set my_file             = `readlink -f $0`
+set my_dir              = `dirname $my_file`
+set deploy_py           = "$my_dir/deploy.py"
+set top_sv              = "$my_dir/top.sv"
+set workspace           = `readlink -f $workspace`
+set partition_file      = "$workspace/partition_file"
+set parameter_file      = "$workspace/parameter_file"
+set wrap_spice_file     = "$workspace/wrap.spf"
+set wrap_verilog_file   = "$workspace/wrap.v"
+setenv CELL_NAME        $cell_name
+setenv PROCESS          $process
+setenv SPICE_FILE       `readlink -f $spice_file`
+setenv VERILOG_FILE     `readlink -f $verilog_file`
+setenv SPICE_LIB        $spice_lib
+
+if(! -e $workspace) then
+    mkdir $workspace
+endif
+cd $workspace
+
+
+# deploy check environment
+python3 $deploy_py $partition_file $parameter_file $wrap_spice_file $wrap_verilog_file
+
+# compile verilog and simulate
+./run

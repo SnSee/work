@@ -19,3 +19,7 @@ strmout -library <library-name> -topCell <cell-name> -view layout -strmFile <exp
 ## 导出cdl
 
 [export_cdl](./export_cdl/README.md)
+
+## 导出lef
+
+[export_lef](./export_lef/README.md)

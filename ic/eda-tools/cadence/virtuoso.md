@@ -1,7 +1,7 @@
 
 # virtuoso
 
-启动
+## 启动
 
 ```sh
 # 需要在启动目录下有 cds.lib 文件定义库配置
@@ -13,7 +13,7 @@ echo 'cmd' >> ~/.cdsinit
 # Tools -> Library Manager 打开库管理器
 ```
 
-快捷键
+## 快捷键
 
 ```text
 shift + S: 查找, search for选项选择查找类型
@@ -21,7 +21,7 @@ k        : 测量距离
 f        : 自动缩放当前版图为合适大小
 ```
 
-导入view
+## 导入view
 
 ```text
 gds: File -> Import -> Stream
@@ -38,18 +38,18 @@ cdl: File -> Import -> Spice
         Output Library: 要导入到哪个库
 ```
 
-导出view
+## 导出view
 
 [命令导出gds](./cadence.md#导出gds)
-[命令导出cdl]()
-[命令导出lef]()
+[命令导出cdl](./cadence.md#导出cdl)
+[命令导出lef](./cadence.md#导出lef)
 
 ```text
 gds: File -> Export -> Stream
     Stream File: 要导出的gds文件
 ```
 
-> Layout 窗口
+## Layout 窗口
 
 最下方状态栏显示三项：
 
@@ -58,3 +58,5 @@ gds: File -> Export -> Stream
 * TODO
 
 ## SKILL
+
+[skill](./skill/skill.md)

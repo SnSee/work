@@ -1,0 +1,6 @@
+#!/bin/csh -f
+
+set cds_lib     = ../4nm_oa/cds.lib
+set lib_name    = ln04lpp_sc_s6p25t_pmk_lvt_c54l04
+set cell_name   = A2BISO_D1_N_S6P25TL_C54L04
+set workspace   = ./ws

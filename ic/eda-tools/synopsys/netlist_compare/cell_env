@@ -1,0 +1,9 @@
+#!/bin/csh -f
+
+set cell_name       = CUDBLVT4_ADDFN_1
+set process         = TT
+set verilog_file    = ./db/CUDBLVT4_ADDFN_1.v
+set spice_file      = ./db/CUDBLVT4_ADDFN_1.spf
+set workspace       = ./ws
+# spice 引用的库
+set spice_lib       = /ic-library/samsung/ln04lpp/pdk/LN04LPP_HSPICE_S00-V1.0.6.0/HSPICE/LN04LPP_Hspice.lib

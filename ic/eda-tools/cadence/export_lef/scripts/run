@@ -1,0 +1,28 @@
+#!/bin/csh -f
+set cell_env_file = $1
+source $cell_env_file
+
+# translate relative path to absolate path
+set my_file         = `readlink -f $0`
+set my_dir          = `dirname $my_file`
+set abs_temp        = "$my_dir/abstract.il.temp"
+set abs_opt_file    = "$my_dir/abstract.options"
+set workspace       = `readlink -f $workspace`
+set cds_lib         = `readlink -f $cds_lib`
+
+if(! -e $workspace) then
+    mkdir $workspace
+endif
+cd $workspace
+
+
+# deploy check environment
+cp $abs_temp abstract.il
+set escape_abs_opt_file = `echo $abs_opt_file | sed 's/\//\\\//g'`
+sed -i "s/{abs_opt_file}/$escape_abs_opt_file/g"    abstract.il
+sed -i "s/{lib_name}/$lib_name/g"                   abstract.il
+sed -i "s/{cell_name}/$cell_name/g"                 abstract.il
+
+
+# export lef
+abstract -nogui -replay abstract.il -cdslib $cds_lib

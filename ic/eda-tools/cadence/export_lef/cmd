@@ -1,0 +1,3 @@
+#!/bin/csh -f
+
+bsub -Ip ./scripts/run ./cell_env

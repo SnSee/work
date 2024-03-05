@@ -10,7 +10,7 @@
 4. 执行 cmd
 ```
 
-## LPE步骤
+## 原理
 
 ```text
 1. 使用 calibre 检查 LVS
