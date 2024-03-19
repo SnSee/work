@@ -11,7 +11,9 @@ tcl命令: Tessent -> Tessent Shell Reference Manual
 
 ## 示例
 
-### verilog 转换为 cell library
+### verilog2cellLibrary
+
+verilog 转换为 cell library
 
 ```bash
 libcomp <verilog> -dof <dofile> -log tessent.log

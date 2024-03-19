@@ -1,0 +1,30 @@
+create $corner
+set_log_file $corner/sis_hdl_validation.log
+set location $corner
+
+# Control to keep intermediate files or not
+set_config_opt qualification_cleanup 0
+
+# set lib-compiler
+set_config_opt qualification_lc_shell {lc_shell}
+set_config_opt qualification_lc_suppress {LBDB-605 LBDB-712}
+# Suppress a list of valid Library Compiler warning ids,optional
+set_config opt qualification lc_suppress warning id list
+
+# set valid data-range
+set_config_opt qualification data range {data range}
+# set data-range tolerance
+set_config opt qualification tol {data range tol}
+
+# set lvf options
+set_config_opt lvf_tol_sigma_to_nom 0.25
+set_config_opt lvf_tol_constraint_sigma_to_nom 0.5
+set_config_opt lvf_sigma_min le-15
+set_config_opt lvf_sigma_max le-9
+set_config_opt lvf_constraint_sigma_min le-15
+set_config_opt lvf_constraint_sigma max le-10
+set_config_opt statistical_enable_constraint_sensitivity 1
+set_config_opt lvf_constraint_check_suppress {}
+
+# check
+qualify_library -check { data_range sensitivity load_index leakage hazard } $lib_file

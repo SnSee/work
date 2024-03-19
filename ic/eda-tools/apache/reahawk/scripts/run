@@ -1,0 +1,41 @@
+#!/bin/csh -ef
+set cell_env_file = $1
+source $cell_env_file
+
+# translate relative path to absolate path
+set my_file         = `readlink -f $0`
+set my_dir          = `dirname $my_file`
+set apl_temp        = "$my_dir/apl.conf.temp"
+set sw_temp         = "$my_dir/sw.conf1.temp"
+set workspace       = `readlink -f $workspace`
+set subckt_dir      = `readlink -f $subckt_dir`
+set lef_file        = `readlink -f $lef_file`
+set lib_file        = `readlink -f $lib_file`
+
+if(! -e $workspace) then
+    mkdir $workspace
+endif
+cd $workspace
+
+
+# deploy check environment
+echo $cell_name > cell.list
+cp $apl_temp apl.conf
+set escape_subckt_dir = `echo $subckt_dir | sed 's/\//\\\//g'`
+set escape_lef_file = `echo $lef_file | sed 's/\//\\\//g'`
+set escape_lib_file = `echo $lib_file | sed 's/\//\\\//g'`
+sed -i "s/{temperature}/$temperature/g"         apl.conf
+sed -i "s/{voltage}/$voltage/g"                 apl.conf
+sed -i "s/{process}/$process/g"                 apl.conf
+sed -i "s/{corner}/$corner/g"                   apl.conf
+sed -i "s/{subckt_dir}/$escape_subckt_dir/g"    apl.conf
+sed -i "s/{lef_file}/$escape_lef_file/g"        apl.conf
+sed -i "s/{lib_file}/$escape_lib_file/g"        apl.conf
+
+
+setenv PATH ${REDHAWK_HOME}:$PATH
+source $LISENCE_FILE
+# TODO: 执行时候会一直卡住
+# apldi -l cell.list -v apl.conf      # cells     : .spiprof
+apldi -c -l cell.list -v apl.conf   # decaps    : .cdev
+apldi -w -l cell.list -v apl.conf   # low-power : .pwcdev

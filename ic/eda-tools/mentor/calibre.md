@@ -11,7 +11,7 @@
 setenv CALIBRE_HOME /eda-tools/mentor/calibre202104/aoj_cal_2021.4_25
 ```
 
-命令行
+## DRC/LVS/ERC
 
 ```bash
 # <runset_file>一般由芯片制造商提供
@@ -39,7 +39,9 @@ Calibre 进行 DRC 检查后，可以通过查看生成的 DRC 摘要报告文�
 3. Database选择 .rep 文件，点击 Open 按钮
 ```
 
-[LVL](https://zhuanlan.zhihu.com/p/148105306)
+## LVL
+
+[知乎](https://zhuanlan.zhihu.com/p/148105306)
 
 ```bash
 dbdiff -refsystem GDS -system GDS -refdesign top_ref.gds top_cell -design top.gds chip_top -write_xor_rules xor.rul diff -resultformat ASCII
@@ -52,7 +54,7 @@ calibre -drc -hier -turbo -hyper -fx xor.rul | tee xor.log &
 
 ## runset
 
-DRC 检查只会对在runset中设置为PRIMARY的cell进行检查
+DRC 检查只会对在runset中设置为PRIMARY的cell进行检查，但支持通配符设置多个cell
 
 > 主要原因是，Calibre需要知道应该检查哪些设计、库和规则文件，并使用runset文件来指导它应该检查哪些单元。其中，在runset中设置为PRIMARY的cell会被视为需要进行DRC检查的主要单元，而其他单元则可能作为引用单元或black box单元被忽略掉。
 >

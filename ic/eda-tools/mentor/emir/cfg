@@ -1,0 +1,11 @@
+# comment
+.global
+NET     : X0.VDD X0.VSS
+.end
+
+.section
+CELL    : S4L_RC_DELAY_0p75
+LAYOUT  : ./db/S4L_RC_DELAY_0p75.gds
+SOURCE  : ./db/S4L_RC_DELAY_0p75.cdl
+POST    : ./db/S4L_RC_DELAY_0p75_post.sp
+.end

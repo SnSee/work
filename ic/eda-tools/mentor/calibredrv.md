@@ -1,7 +1,7 @@
 
 # calibredrv
 
-打开calibredrv界面通过 **help -> Open User Manual** 查看用户手册，或者查看同级或子目录中是否有 doc* 文件
+打开calibredrv界面通过 **help -> Open User Manual** 查看用户手册，或者查看同级或子目录中是否有 doc* 文件，找到 index.html 打开后在 Physical Verification 中查找 DESIGNrev 后打开
 
 [参考脚本](../scripts/calibredrv.tcl)
 
@@ -9,14 +9,13 @@
 
 ```sh
 # 进入交互页面，默认打开 gui
-calibredrv -shell   # 交互页面使用tcl语法
+calibredrv -shell           # 交互页面使用tcl语法
+calibredrv test.tcl         # 执行脚本中的命令后退出
 
 # 其他命令行选项
 -s : 启动时加载tcl脚本
 -m : 启动时加载layout(.gds或.oasis)，多个文件需指定多次
 -l : 指定layermap文件，需要和 -m 一起使用
-
-calibredrv test.tcl         # 执行脚本中的命令后退出
 ```
 
 > **注意**

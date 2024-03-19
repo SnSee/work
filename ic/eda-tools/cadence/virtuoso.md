@@ -19,6 +19,7 @@ echo 'cmd' >> ~/.cdsinit
 shift + S: 查找, search for选项选择查找类型
 k        : 测量距离
 f        : 自动缩放当前版图为合适大小
+shift + f: 有多个 cell 时显示 cell 内部结构
 ```
 
 ## 导入view

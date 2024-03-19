@@ -1,0 +1,29 @@
+TEMPERATURE {temperature}
+SPICE_NETLIST {spice_file}
+APL_HSPICE {hspice_path}
+DEVICE_MODEL_LIBRARY {spice_lib} {process}
+SWITCH_TYPE HEADER
+EXT_PIN VDDG
+INT_PIN VDD
+GND_PIN_NAME VSS
+VDDVALUE {voltage1} {voltage2}
+DC_BIAS VDDL {voltage1}
+ON_STATE {
+    {switch_pin1} {voltage2} 0
+    {switch_pin2} 0 {voltage2}
+}
+OFF_STATE {
+    {switch_pin1} {voltage2} {voltage2}
+    {switch_pin2} {voltage2} {voltage2}
+}
+POWER_UP {
+    {switch_pin1} {voltage2} 0
+    {switch_pin2} 0 {voltage2}
+}
+POWER_DOWN {
+    {switch_pin1} {voltage2} {voltage2}
+    {switch_pin2} {voltage2} {voltage2}
+}
+CONTROL_PIN {switch_pin1} F R
+CONTROL_PIN {switch_pin2} F R
+MD_PWL 1

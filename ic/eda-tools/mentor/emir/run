@@ -1,0 +1,3 @@
+#!/bin/csh -f
+
+../emir_py/emir.py -config ./cfg -process ln04lpp -workspace ./ws

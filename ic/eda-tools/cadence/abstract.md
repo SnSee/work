@@ -74,7 +74,7 @@ option 值类型
 |option | 设置方式
 |- |-
 |LEFLibraryName | 修改为实际的库名
-|ViewLayout     | 修改为 layout_lef
+|ViewLayout     | 修改为实际要导出的 layout 名称(一般不用修改)
 
 ### Bin 设置(Core/IO/Corner/Block都有各自的设置)
 

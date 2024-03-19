@@ -1,0 +1,16 @@
+#!/bin/csh -f
+
+set cell_name   = CUDBLVT4_LDPQM10_1
+set temperature = 25
+set voltage     = 0.5500
+set process     = TT
+set corner      = tt_nominal_max_0p5500v_25c
+set subckt_dir  = ./db/spice
+set lef_file    = ./db/lef/CUDBLVT4_LDPQM10_1.lef
+set lib_file    = ./db/liberty/CUDBLVT4_LDPQM10_1_tt_nominal_max_0p5500v_25c.lib
+set workspace   = ./ws
+
+set REDHAWK_HOME = /eda-tools/apache/RedHawk_Linux64e6_V19.1.4/bin
+set LISENCE_FILE = /eda-tools/env/ansys.csh.any
+# spice 引用的库
+set spice_lib    = /ic-library/samsung/ln04lpp/pdk/LN04LPP_HSPICE_S00-V1.0.6.0/HSPICE/LN04LPP_Hspice.lib

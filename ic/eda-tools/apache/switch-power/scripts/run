@@ -1,0 +1,36 @@
+#!/bin/csh -ef
+set cell_env_file = $1
+source $cell_env_file
+
+# translate relative path to absolate path
+set my_file         = `readlink -f $0`
+set my_dir          = `dirname $my_file`
+set sw_temp         = "$my_dir/sw.conf1.temp"
+set workspace       = `readlink -f $workspace`
+set spice_file      = `readlink -f $spice_file`
+
+if(! -e $workspace) then
+    mkdir $workspace
+endif
+cd $workspace
+
+
+# deploy check environment
+cp $sw_temp sw.conf
+set escape_spice_file = `echo $spice_file | sed 's/\//\\\//g'`
+set escape_hspice_path = `echo $hspice_path | sed 's/\//\\\//g'`
+set escape_spice_lib = `echo $spice_lib | sed 's/\//\\\//g'`
+sed -i "s/{spice_file}/$escape_spice_file/g"        sw.conf
+sed -i "s/{hspice_path}/$escape_hspice_path/g"      sw.conf
+sed -i "s/{spice_lib}/$escape_spice_lib/g"          sw.conf
+sed -i "s/{temperature}/$temperature/g"             sw.conf
+sed -i "s/{voltage}/$voltage/g"                     sw.conf
+sed -i "s/{process}/$process/g"                     sw.conf
+sed -i "s/{switch_pin}/$switch_pin/g"               sw.conf
+
+echo "$cell_name sw.conf" > cell.conf
+
+setenv PATH ${REDHAWK_HOME}:$PATH
+source $LISENCE_FILE
+
+aplsw -c cell.conf -o $cell_name.out

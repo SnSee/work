@@ -1,0 +1,7 @@
+#!/bin/csh -f
+set cell                = CUDBSVT4_MUXI3AOIM8_1_VDD
+set lib_file            = ./db/CUDBLVT4_ADDFSN_1_tt_nominal_max_0p4500v_25c.lib
+set corner              = tt_nominal_max_0p4500v_25c
+set workspace           = ./ws
+
+set data_range          =

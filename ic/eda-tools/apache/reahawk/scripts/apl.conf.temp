@@ -1,0 +1,43 @@
+APL_RUN_MODE DI
+LEF_FILES {
+    {lef_file}
+}
+
+VDD_PIN_NAME VDD
+GND_PIN_NAME VSS
+PRIMARY_GND_PIN VSS
+PRIMARY_VDD_PIN VDD
+APL_VOLTAGES 6 0.6 0.7 0.8 0.9 1.0 1.15
+
+DEBUG 0
+WORKING_DIRECTORY .
+APL_RESULT_DIRECTORY cellresults
+APL_HSPICE /eda-tools/synopsys/hspice_vQ-2020.03-SP2-1/hspice/Q-2020.03-SP2-1/hspice/bin/hspice
+
+ACCURATE_MODE finfet
+INPUT_TYPE 4
+IPROF_NUMBER 200
+APL_TAIL_REDUCTION moderate
+
+RUN_TIME_LIMIT 72
+
+#GRID_TYPE LSF
+#BATCH_QUEUING_COMMAND bsub
+#BATCH_QUEUING_OPTIONS -r -R select [type==any]
+#EXEC_PATH /eda-tools/openlava/openlava4.0/bin
+#LSF_SUBMIT_MODE 2
+#JOB_COUNT 20
+#QUEUE analog
+
+DESIGN_CORNER {
+    {corner} {
+        TEMPERATURE {temperature}
+        VDD {voltage}
+        PROCESS {process}
+        DEVICE_MODEL_LIBRARY /ic-library/samsung/ln04lpp/pdk/LN04LPP_HSPICE_S00-latest/HSPICE/LN04LPP_Hspice.lib {process}
+        SPICE_SUBCKT_DIR {subckt_dir}
+        LIB_FILES {
+            {lib_file}
+        }
+    }
+}
