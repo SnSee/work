@@ -44,6 +44,7 @@ Calibre 进行 DRC 检查后，可以通过查看生成的 DRC 摘要报告文�
 [知乎](https://zhuanlan.zhihu.com/p/148105306)
 
 ```bash
+# 指定 -resultformat ASCII 时导出 ascii 格式文件，不指定时导出 gds
 dbdiff -refsystem GDS -system GDS -refdesign top_ref.gds top_cell -design top.gds chip_top -write_xor_rules xor.rul diff -resultformat ASCII
 calibre -drc -hier -turbo -hyper -fx xor.rul | tee xor.log &
 ```

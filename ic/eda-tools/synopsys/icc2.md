@@ -9,7 +9,68 @@ message: info/error 编号文档
 shell  : icc2_lm_shell 命令文档
 ```
 
-icc2基本用法(tcl语法)
+在界面操作时会在终端显示主要的的 tcl 命令，同时在 **lm_command.log** 文件中会记录所有命令
+
+## icc2基本用法(tcl语法)
+
+### 查看 ndm
+
+```sh
+# 命令行方式
+icc2_lm_shell
+open_lib test       # test是目录，下面要有 reflib.ndm
+
+# 打开界面
+icc2_lm_shell -gui
+```
+
+### 命令
+
+获取lib名称列表，默认为所有已经open的lib
+
+```tcl
+set lib_names [get_libs $name_wildcard]
+```
+
+获取cell名称列表，默认为所有cell
+
+```tcl
+set frame_name [get_lib_cells -include_sub_cells $lib_name/$cell_name/frame]
+set timing_name [get_lib_cells -include_sub_cells $lib_name/$cell_name/timing]
+```
+
+获取pin名称列表
+
+```tcl
+# pin格式: $lib_name/$cell_name/$pin_name
+set pin_names [get_lib_pins -all -of_objects $frame_name]
+```
+
+判断是否为空
+
+```tcl
+set lc [get_lib_cells */*/frame]
+if {[sizeof_collection $lc]} {
+    puts "not empty"
+}
+```
+
+添加/获取 antenna 属性
+
+```tcl
+foreach cell [get_lib_cells] {
+    foreach pin [get_lib_pins -all -of_objects $cell] {
+        # 插入
+        set_attribute -quiet $pin gate_area "oxide1 [get_object_name [get_layers -filter mask_name==metal1]] 0.00504"
+        set_attribute -quiet $pin diff_area "[get_object_name [get_layers -filter mask_name==metal1]] 0.00288"
+        # 获取
+        set gate_area [get_attribute $pin gate_area]
+        set diff_area [get_attribute $pin diff_area]
+    }
+}
+```
+
+### 创建 ndm
 
 ```sh
 icc2_lm_shell -f test.tcl
@@ -55,4 +116,11 @@ if {[sizeof_collection $lc]} {              # 判断cell对象是否有效
 # 保存ndm
 check_workspace
 commit_workspace -force -output $ndm
+```
+
+## 命令
+
+```tcl
+gui_start       # 打开界面
+open_lib        # 打开 ndm
 ```

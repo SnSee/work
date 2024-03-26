@@ -44,11 +44,11 @@ bjobs
 bjobs -u all -W
 
 # 查看指定任务
-bjobs [-w] [-l] <JOBID>
+bjobs [-w] [-l] <JOBID> [<JOBID2> ...]
 -noheader: 不显示表头
 
 # 终止指定任务
-bkill <JOBID>
+bkill <JOBID> [<JOBID2> ...]
 # 终止当前用户所有任务
 bkill 0
 
@@ -63,6 +63,10 @@ bhosts <queue>
 
 # 查看负载
 lsload [HOST_NAME]
+
+# 查看任务在各个状态持续时间
+bhist
+bhist -l <JOBID>
 ```
 
 IBM lsf log
