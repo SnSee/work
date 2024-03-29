@@ -50,6 +50,12 @@ gds: File -> Export -> Stream
     Stream File: 要导出的gds文件
 ```
 
+## 自定义菜单栏
+
+在 ~/.cdsinit 中 load /path/[custom_menu.il](./scripts/custom_menu.il)
+
+添加自定义 layout/schematic 菜单栏
+
 ## Layout 窗口
 
 最下方状态栏显示三项：

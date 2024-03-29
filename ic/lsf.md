@@ -29,24 +29,37 @@ LSF（Load Sharing Facility）采用了RPC（Remote Procedure Call）机制来�
 使用管理员定义的对象：如何查看和使用队列， 应用配置以及预留资源
 ```
 
-命令
+## 命令
 
-```bash
-# 提交任务
+### 提交任务
+
+```sh
 bsub [-q <queue>] [-m <host>] [-o <log>] [-e <err.log>] [-cwd <working_directory>] <EXE>
-# -Ip: 在当前shell交互
+-Ip: 在当前shell交互
 # 引用jobid: %J
+```
 
-# 查看当前用户所有任务
-bjobs 
+### 查看任务
 
-# 查看所有用户所有任务
-bjobs -u all -W
-
-# 查看指定任务
-bjobs [-w] [-l] <JOBID> [<JOBID2> ...]
+```sh
+bjobs [<JOBID> <JOBID2> ...]
+-u: 指定用户，all 表示所有用户
+-w: 显示完整shell命令，默认精简显示
+-l: 显示指定任务细节信息，输出有多行
+-W: 显示资源占用情况
+-p: 显示 pending 任务及原因
+-r: 显示正在运行任务
+-s: 显示暂停任务及原因
+-d: 显示最近结束任务
+-a: 显示所有状态的任务，包括最近结束的
+-m: 指定host
+-aps: 查看任务优先级，指定 APS 才有
+-env: 查看指定任务提交时环境变量
 -noheader: 不显示表头
+-script: 显示指定任务提交时的脚本
+```
 
+```sh
 # 终止指定任务
 bkill <JOBID> [<JOBID2> ...]
 # 终止当前用户所有任务
@@ -69,7 +82,7 @@ bhist
 bhist -l <JOBID>
 ```
 
-IBM lsf log
+### IBM lsf log
 
 ```sh
 # 记录任务状态日志路径

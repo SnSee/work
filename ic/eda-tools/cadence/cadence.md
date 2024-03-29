@@ -11,9 +11,19 @@
 
 ## cds.lib
 
-```sh
-# 在当前 cds.lib 中导入其他的 cds.lib
+在当前 cds.lib 中导入其他的 cds.lib
+
+```txt
 INCLUDE /tmp/cds.lib
+```
+
+导入 foundry 提供的工艺库
+
+```txt
+# 创建名为 ln04lpp 的工艺库
+DEFINE ln04lpp      /tmp/CDS/oa/ln04lpp
+DEFINE ln04lpp_esd  /tmp/CDS/oa/ln04lpp_esd
+DEFINE ln04lpp_tech /tmp/CDS/oa/ln04lpp_tech_14M_3Mx_2Fx_7Dx_2Iz_LB
 ```
 
 ## 导出gds

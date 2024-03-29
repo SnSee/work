@@ -263,12 +263,6 @@ mouseAddPt              # 记录鼠标左击位置
 )
 ```
 
-### 自定义菜单栏
-
-在 ~/.cdsinit 中 load /path/[custom_menu.il](./scripts/custom_menu.il)
-
-添加自定义 layout/schematic 菜单栏
-
 ### Layout
 
 * dbOpenCellViewByType: 在内存中打开cell-view(重复调用为同一个对象)

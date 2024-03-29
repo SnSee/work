@@ -27,6 +27,8 @@
 ```verilog
 // 预处理指令，可以理解为 C 语言的 #define 宏
 `define name value
+// 取消宏
+`undef name
 // 引用宏
 `name
 
