@@ -108,6 +108,7 @@ state_partitions one
 # timing when condition
 # combinational(组合逻辑)
 set_config_opt -type {timing} -cell SDFFRPQ -from B0 -to Y default_arc_whens { !A0 }
+set_config_opt -type {timing} -cell SDFFRPQ -from B0 -to Y -- whens {A0 !A0 {B1 | B2}}
 # 时序逻辑
 set_config_opt -type {setup hold} -cell SDFFRPQ -from SE -reference CK default_arc_whens {SI}
 

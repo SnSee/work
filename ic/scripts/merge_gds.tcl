@@ -10,7 +10,7 @@ proc merge_gds { top_cell gds_dir } {
         # 获取 right-most x 坐标作为引用位置
         set x [lindex [$L bbox $top_cell recompute] 2]
         set cell_name [file rootname [file tail $gf]]
-        set ref_L [layout create $gf -dt_expand]
+        set ref_L [layout create $gf -dt_expand -preserveTextAttributes]
         # 复制 cell
         $L create cell $cell_name $ref_L $cell_name
         # 创建 instance，紧跟在上一个cell后边

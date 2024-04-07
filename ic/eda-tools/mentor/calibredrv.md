@@ -44,8 +44,17 @@ puts [$L units user]            # 1e-2
 
 manual目录（第5页）Layout Object 项下有layout相关所有命令
 
+|layout create 选项 | 含义
+|- | -
+|-dt_expand                 | layer.datatype 格式表示 layer
+|-preserveProperties        | 保留 property 信息
+|-preserveTextAttributes    | 保留 text(label) 属性
+|-ignoreInsts               | 不加载 instance
+|-ignorePaths               | 不加载 path
+|-ignorePolys               | 不加载 polygon
+|-ignoreTexts               | 不加载 text(label)
+
 ```tcl
-# -dt_expand: 可选项，展开datatype到layer, 
 # 如 layer 15, datatype 235和236 分别表示为 15.235, 15.236
 set L [layout create test.gds -dt_expand]       # 加载gds，通过对象L访问
 $L gdsout new.gds                               # 导出gds
@@ -92,7 +101,7 @@ $L iterator {ref | sref | aref} <cell_name> range 0 end
 
 ```tcl
 # 遍历text
-$L iterator text <cell_name> <layer_number> range 0 end
+$L iterator text <cell_name> <layer_number> range 0 end -preserveTextAttributes
 # 返回值为多个 {text:string x:int y:int}
 
 # 遍历/获取所有polygon
@@ -117,9 +126,15 @@ foreach poly $polygons {
 $L query polygon <cell_name> 0 100 <x> <y> -inside
 ```
 
+#### create
+
+#### modify
+
+#### delete
+
 #### tips
 
-#### 获取 pin 对应的多层 polygons
+##### 获取 pin 对应的多层 polygons
 
 1. 通过 **NOT** 命令剪切 metal layers，导出为新的 metal layers
 2. 通过 **connect** 命令连接新的 metal layers

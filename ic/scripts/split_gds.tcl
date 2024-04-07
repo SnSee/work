@@ -1,7 +1,7 @@
 # 运行方式: calibredrv split_gds.tcl test.gds output_dir
 
 proc split_gds {gds_file out_dir} {
-    set L [layout create $gds_file -dt_expand]
+    set L [layout create $gds_file -dt_expand -preserveTextAttributes]
     foreach cell_name [lsort [$L cells]] {
         $L gdsout "$out_dir/$cell_name.gds" $cell_name
     }

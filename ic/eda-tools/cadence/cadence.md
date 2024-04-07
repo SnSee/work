@@ -41,3 +41,9 @@ strmout -library <library-name> -topCell <cell-name> -view layout -strmFile <exp
 ## 导出lef
 
 [export_lef](./export_lef/README.md)
+
+## 导入gds
+
+```sh
+strmin -library <library-name> -strmFile <import-gds> -attachTechFileOfLib <tech-name> -noWarn '154 156' -logFile 'strmIn.log'
+```
