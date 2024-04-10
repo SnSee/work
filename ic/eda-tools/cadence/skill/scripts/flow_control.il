@@ -1,6 +1,13 @@
 ;; if
 if(t then println("true"))
 if(nil then else println("false"))
+;; 数字比较: > >= < <= == !=
+if(2 > 1 then println("true"))
+;; 字符串比较
+if("a" == "a" then println("true"))
+if("a" != "a" then println("false"))
+;; 正则比较(实际效果是 search)
+if(rexMatchp("^[0-9]+" "123") then println("true"))
 
 ;; for
 for(i 1 10

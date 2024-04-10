@@ -1,0 +1,13 @@
+
+LAYOUT SYSTEM GDSII
+LAYOUT PATH test.gds
+LAYOUT PRIMARY top_cell
+
+PRECISION 1000
+
+DRC RESULTS DATABASE test.rdb
+DRC SUMMARY REPORT test.rpt
+
+poly_spacing {
+    EXTERNAL 15 < 1
+}

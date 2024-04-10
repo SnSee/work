@@ -51,6 +51,13 @@ tvf::VERBATIM {
 }
 ```
 
+### 注释
+
+```txt
+svrf 使用 c 风格注释(// 和 /* */)
+tvf 使用 # 注释
+```
+
 ### SVRF 调用 SVRF
 
 调用其他 svrf 文件
@@ -93,8 +100,8 @@ DRC SUMMARY REPORT   test.rpt           // report
 ### AND
 
 ```svrf
-AND layer1                  # layer1 自身有重叠部分(polygons)
-AND layer1 layer2           # layer1 和 layer2 重叠部分(polygons)
+AND layer1                              // layer1 自身有重叠部分(polygons)
+AND layer1 layer2                       // layer1 和 layer2 重叠部分(polygons)
 ```
 
 ### LAYER

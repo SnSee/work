@@ -1,0 +1,15 @@
+(DELAYFILE
+  (SDFVERSION "OVI 3.0")
+  (DIVIDER .)
+  (TIMESCALE 1ns)
+  (CELL
+    (CELLTYPE "and2")
+    (INSTANCE test.ia)
+    (TIMINGCHECK
+        (SETUP c (COND symbol_name1 clk)(6:6:6))
+        (HOLD c (COND symbol_name2 clk)(6:6:6))
+        //(SETUP c (COND a==1'b1 clk)(6:6:6))
+        //(HOLD c (COND a==1'b1 clk)(6:6:6))
+    )
+  )
+)

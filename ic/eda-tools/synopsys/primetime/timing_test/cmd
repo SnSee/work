@@ -1,0 +1,3 @@
+#!/bin/csh -f
+
+primetime -file test.tcl

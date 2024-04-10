@@ -1,0 +1,10 @@
+#!/bin/csh -f
+
+vcs -kdb -debug_access+all test.v
+
+./simv
+
+# ./simv -ucli -i ./dump_fsdb_vcs.tcl +fsdb+autoflush -l sim.log
+# ./simv -verdi
+# verdi -simBin "./simv" -ssf inter.fsdb
+# verdi -ssf inter.fsdb -ssdf test.sdf
