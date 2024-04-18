@@ -34,3 +34,8 @@
 |masis      | NA
 |bitmap     | NA
 |apl        | NA
+
+## Front-End Back-End
+
+前端 views: liberty, atpg, verilog, cdl
+后端 views: LEF, GDS, SPICE-Netlist, bitmap
