@@ -88,7 +88,7 @@ artMakeString(t)                ; "t"
 sprintf(nil "%d" 123)           ; "123"
 ```
 
-#### 列表
+#### 列表(list)
 
 ```sh
 a = '()                 ; 空列表

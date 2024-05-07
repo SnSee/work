@@ -67,6 +67,8 @@ bkill 0
 
 # 查看所有队列
 bqueues
+# 查看指定用户可以使用的队列
+bqueues -u <user_id>
 
 # 查看所有主机
 bhosts

@@ -97,4 +97,11 @@ gds: File -> Export -> Stream
 
 在 SKILL IDE 中执行代码可以设置断点并根据界面提供的控制按钮进行操作
 
+### 函数调用堆栈
+
+```skill
+tracef('t)          ; 开启
+untrace()           ; 关闭
+```
+
 ## 执行 skill 脚本
