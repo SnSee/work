@@ -3,8 +3,8 @@
 
 ## 类型
 
-* SP: Single Port, 一个地址线和数据线，读写不能同时进行
-* RT: Two Port, 读写分别有一个地址线和数据线
-* DP: Dual Port, 两对独立运行的读写地址线和数据线，可以同时读但不能同时写
+* SP: Single Port, 一个端口不同时间读写
+* RT: Two Port, 两个端口分别负责只读/只写
+* DP: Dual Port, 连个端口都可读写，可同时读，不可同时写
 * R1: One Port Register File
 * R2: Two Port Register File

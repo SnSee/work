@@ -41,6 +41,8 @@ bsub [-q <queue>] [-m <host>] [-o <log>] [-e <err.log>] [-cwd <working_directory
 
 ### 查看任务
 
+#### bjobs
+
 ```sh
 bjobs [<JOBID> <JOBID2> ...]
 -u: 指定用户，all 表示所有用户
@@ -59,6 +61,16 @@ bjobs [<JOBID> <JOBID2> ...]
 -script: 显示指定任务提交时的脚本
 ```
 
+#### bqueues
+
+```sh
+bqueues [<QUEUE_NAME>]
+-l: 显示细节信息
+-m: 查看服务器所在队列，-m <HOST_NAME>
+-u: 查看指定用户可以使用的队列，-u <USER_NAME>
+-noheader: 不显示表头
+```
+
 ```sh
 # 终止指定任务
 bkill <JOBID> [<JOBID2> ...]
@@ -67,8 +79,6 @@ bkill 0
 
 # 查看所有队列
 bqueues
-# 查看指定用户可以使用的队列
-bqueues -u <user_id>
 
 # 查看所有主机
 bhosts
