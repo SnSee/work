@@ -31,6 +31,14 @@ LSF（Load Sharing Facility）采用了RPC（Remote Procedure Call）机制来�
 
 ## 命令
 
+### 查看 lsf 配置
+
+#### bparams
+
+```sh
+bparams -l
+```
+
 ### 提交任务
 
 ```sh
@@ -60,6 +68,15 @@ bjobs [<JOBID> <JOBID2> ...]
 -noheader: 不显示表头
 -script: 显示指定任务提交时的脚本
 ```
+
+##### 常见 JOB STATUS
+
+|status | desc
+|- |-
+|PEND   | 尚未运行
+|RUN    | 正在运行
+|DONE   | 正常退出
+|EXIT   | 异常退出
 
 #### bqueues
 

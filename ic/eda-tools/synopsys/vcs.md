@@ -3,6 +3,14 @@
 
 vcs(Verilog Compiler Simulator) 是电路仿真验证工具，可以进行电路的时序模拟。可以借助 verdi 进行 debug.
 
+## 命令行参数
+
+|arg | desc
+|- |-
+|-sverilog          | 支持使用 system-verilog 语法
+|-fsdb              | 生成波形文件
+|-debug_access+all  | debug 模式
+
 ## vcs 对 verilog 进行仿真测试
 
 [eetop](https://blog.eetop.cn/blog-283296-29471.html)
@@ -20,14 +28,26 @@ vcs 查看波形
 vcs -kdb -debug_access+all $verilog_files
 ./simv -gui     # 使用 dve 查看
 ./simv -verdi   # 使用 verdi 查看(推荐)
-
-# verdi
-# 1.点击工具栏 New WaveForm
-# 2.将 Instance 界面被测试 instance 拖动到 Waveform 界面
-# 3.点击 Run Simulation 按钮开始测试
-# 4.在 Waveform 界面查看波形
-# 5.更多介绍查看 <<VCS QuickStart>> Setting up the simulation for debug 章节
 ```
+
+## verdi
+
+命令行参数
+
+|arg | desc
+|- |-
+|f/F    | 指定含有多个 verilog 文件路径的文件
+|ssf    | 指定 fsdb/vcd 波形文件
+|mdt    | 指定 mdt 文件
+|sv     | 支持 system-verilog(IEEE 1800-2005)
+
+### 基础用法
+
+1.点击工具栏 New WaveForm
+2.将 Instance 界面被测试 instance 拖动到 Waveform 界面
+3.点击 Run Simulation 按钮开始测试
+4.在 Waveform 界面查看波形
+5.更多介绍查看 <<VCS QuickStart>> Setting up the simulation for debug 章节
 
 ## sdf 反标（sdf back-annotation）
 
@@ -49,3 +69,35 @@ endmodule
 ## 对比 netlist 检查逻辑功能是否一致
 
 [netlist_compare](./netlist_compare/README.md) 如对比 verilog 网表和 spice/cdl 网表
+
+## vcd/vcd+(vpd)
+
+```sh
+vcs -debug_access+all test.v
+./simv
+vpd2vcd vcdplus.vpd > test.vcd
+vcd2vec -nvcd test.vcd > test.vec
+```
+
+verilog 中需要添加代码
+
+```verilog
+module tmp();
+    initial begin
+        $vcdpluson();
+    end
+endmodule
+```
+
+## fsdb
+
+```sh
+vcs -fsdb test.v
+```
+
+```verilog
+initial begin
+    $fsdbDumpfile("test.fsdb");
+    $fsdbDumpvars;
+end
+```

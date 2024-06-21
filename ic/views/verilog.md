@@ -72,7 +72,24 @@ module D_FF(CLK, D, Q);             // 定义模块(module)及端口(pin/port)
 endmodule
 ```
 
-### [赋值](https://zhuanlan.zhihu.com/p/625048683)
+### 赋值
+
+[赋值](https://zhuanlan.zhihu.com/p/625048683)
+
+#### 阻塞赋值
+
+```verilog
+reg a;
+a = 1'b1;
+```
+
+位宽不一致时
+
+```verilog
+ram[3:0] = di[3:0];   // 位宽一致，正常赋值
+ram[3:0] = di[5:0];   // 只取 di 的低位赋给 ram，即 di[3:0]
+ram[5:0] = di[3:0];   // 低位正常赋值，高位补 0，ram[5:4] = 2'b00, ram[3:0] = di[3:0]
+```
 
 #### assign
 
@@ -81,6 +98,30 @@ assign 是持续赋值，主要适用于对 wire 类型的变量赋值
 ```verilog
 // a, b, c 为三个 wire 类型变量，a, b 的任何变化都将随时反应到 c 上
 assign c = a & b;
+```
+
+### 数组
+
+#### 二维数组
+
+```verilog
+// 4 行 8 列
+reg [7:0] my_array [0:3];
+
+// 声明时初始化
+reg [7:0] my_array [0:3] = '{8'h11, 8'h22, 8'h33, 8'h44};
+
+// 按索引赋值
+my_array[1] = 8'hAA;
+
+// 循环赋值
+integer i;
+integer j;
+for (i = 0; i < 4; i = i + 1) begin
+  for (j = 0; j < 8; j = j + 1) begin
+    my_array[i][j] = 1'b0;
+  end
+end
 ```
 
 ### always @
@@ -127,6 +168,12 @@ always @(a, b, c)
 
 ### parameter
 
+* parameter 不能在运行时即组合逻辑或时序逻辑中修改，但可以在编译阶段修改
+* module 中的 parameter 可以在实例化时指定
+* 作用域为当前 module
+
+#### 定义与引用
+
 ```verilog
 module test();
     parameter msb = 7;                  // 声明
@@ -142,6 +189,28 @@ module test();
     parameter p1 = 13'h7e;
     parameter [31:0] dec_const = 1'b1;  // 会自动转换为 32-bit
     parameter newconst = 3'h4           // 隐式 3-bit
+endmodule
+```
+
+#### 定义/设置 module 参数
+
+```verilog
+// 定义参数
+module test #(
+  parameter PARAM1 = 1,
+  parameter PARAM2 = 2,
+  parameter PARAM3 = 3
+  ) (
+    input a,
+    input b,
+    output c
+  );
+endmodule
+
+// 设置参数
+module top();
+  wire a, b, c;
+  test #(.PARAM1(10), .PARAM3(30)) i_test(a, b, c);
 endmodule
 ```
 
@@ -348,4 +417,57 @@ module test();
 
     and2 ia(.a(a), .b(b), .c(c), .clk(clk));
 endmodule
+```
+
+## 函数
+
+### display
+
+|symbol | desc
+|- |-
+|%d     | 整数
+|%f     | 浮点数
+|%e     | 科学计数法
+|%b     | 二进制，显示时 **低位在前**
+|%h     | 十六进制
+|%s     | 字符串
+|%t     | 时间，显示为浮点数
+|%m     | 时序，显示为 [x ns] 或 [x ps]
+|%g     | 通用格式
+
+输出到命令行(会自动换行)
+
+```verilog
+reg [7:0] sig;
+display("sig value: %h", sig);
+```
+
+### time/realtime
+
+仿真开始到当前位置时间
+
+```verilog
+// 显示当前仿真时间，单位为时钟周期
+$display("Current simulation time is %0d", $time);
+
+// 或者显示为浮点数形式，代表时间单位
+$display("Current simulation time is %0t ns", $realtime);
+```
+
+### random
+
+生成无符号整数，范围: $[0, 2^{64} - 1]$
+
+### fsdbDumpvars
+
+将仿真期间的变量写入 fsdb 文件
+
+```verilog
+fsdbDumpvars(<filehandle>, <variable_list>);
+
+// 什么都不指定表示记录所有变量
+fsdbDumpvars;
+
+// 记录多个变量
+fsdbDumpvars(1, clk, di, do);
 ```
