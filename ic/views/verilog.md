@@ -72,6 +72,23 @@ module D_FF(CLK, D, Q);             // 定义模块(module)及端口(pin/port)
 endmodule
 ```
 
+### 位选择/部分选择
+
+bit-select, part-select
+
+选择区间时高低对应关系必须和声明时一致(IEEE 5.2.1 章节)
+
+```verilog
+reg [0:9] a;
+reg [9:0] b;
+
+a[0:9] = 1;     // 正确
+b[9:0] = 1;     // 正确
+
+a[9:0] = 1;     // 错误
+b[0:9] = 1;     // 错误
+```
+
 ### 赋值
 
 [赋值](https://zhuanlan.zhihu.com/p/625048683)
