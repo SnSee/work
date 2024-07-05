@@ -93,11 +93,32 @@ b[0:9] = 1;     // 错误
 
 [赋值](https://zhuanlan.zhihu.com/p/625048683)
 
-#### 阻塞赋值
+#### 过程赋值
+
+主要使用与对 reg 类型变量赋值
+
+阻塞赋值(=) 与 非阻塞赋值(<=)
 
 ```verilog
-reg a;
-a = 1'b1;
+module test;
+  reg a, b, ck;
+  always #1 ck = ~ck;
+  always @(posedge ck) begin
+    // 阻塞赋值: a, b 值始终一致
+    a = ck;
+    b = a;
+
+    // 非阻塞赋值: b 是上个时钟周期 a 的值
+    a <= ck;
+    b <= a;
+  end
+
+  initial begin
+    $fsdbDumpfile("test.fsdb");
+    $fsdbDumpvars;
+    #8 $finish;
+  end
+endmodule
 ```
 
 位宽不一致时
@@ -108,7 +129,7 @@ ram[3:0] = di[5:0];   // 只取 di 的低位赋给 ram，即 di[3:0]
 ram[5:0] = di[3:0];   // 低位正常赋值，高位补 0，ram[5:4] = 2'b00, ram[3:0] = di[3:0]
 ```
 
-#### assign
+#### assign 持续赋值
 
 assign 是持续赋值，主要适用于对 wire 类型的变量赋值
 
@@ -181,6 +202,13 @@ always @(a, b, c)
 // 正负符号
 8'd-6           // 非法
 -8'd6           // 8-bit 十进制负数
+```
+
+#### 重复运算符 {}
+
+```verilog
+{4{1'b1}}   // 相当于 4'b1111
+{4{2'b01}}  // 相当于 8'b01010101
 ```
 
 ### parameter
@@ -487,4 +515,13 @@ fsdbDumpvars;
 
 // 记录多个变量
 fsdbDumpvars(1, clk, di, do);
+```
+
+## 代码片段
+
+### 定义时钟
+
+```verilog
+parameter CYCLE = 10;
+always #(CYCLE*0.5) ck = ~ck;
 ```

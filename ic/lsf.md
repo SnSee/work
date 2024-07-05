@@ -86,6 +86,9 @@ bqueues [<QUEUE_NAME>]
 -m: 查看服务器所在队列，-m <HOST_NAME>
 -u: 查看指定用户可以使用的队列，-u <USER_NAME>
 -noheader: 不显示表头
+
+# 查看队列主机
+bqueues -l <queue_name> | grep HOSTS
 ```
 
 ```sh

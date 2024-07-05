@@ -47,7 +47,7 @@ vcs -kdb -debug_access+all $verilog_files
 2.将 Instance 界面被测试 instance 拖动到 Waveform 界面
 3.点击 Run Simulation 按钮开始测试
 4.在 Waveform 界面查看波形
-5.更多介绍查看 <<VCS QuickStart>> Setting up the simulation for debug 章节
+5.更多介绍查看 \<\<VCS QuickStart\>\> Setting up the simulation for debug 章节
 
 ## sdf 反标（sdf back-annotation）
 
@@ -76,7 +76,7 @@ endmodule
 vcs -debug_access+all test.v
 ./simv
 vpd2vcd vcdplus.vpd > test.vcd
-vcd2vec -nvcd test.vcd > test.vec
+vcd2vec -nvcd test.vcd -nsig test.sig -nvec test.vec
 ```
 
 verilog 中需要添加代码
@@ -89,7 +89,29 @@ module tmp();
 endmodule
 ```
 
-## fsdb
+test.sig 文件格式(# 不是注释)
+
+```txt
+#scope <module_name>
+#vih 0.8
+#vil 0
+#voh 0.5
+#vol 0.3
+#trise 10ps
+#tfall 10ps
+#input ls
+#input ds
+#input sd
+#input a[[6:0]]
+#input ceb
+#input web
+#input ck
+#output di[[15:0]]
+#output do[[15:0]]
+#tdelay 5.0n do[[15:0]]
+```
+
+## fsdb 波形文件
 
 ```sh
 vcs -fsdb test.v
