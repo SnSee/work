@@ -517,6 +517,37 @@ fsdbDumpvars;
 fsdbDumpvars(1, clk, di, do);
 ```
 
+### 命令行条件参数
+
+```verilog
+$test$plusargs        // 检查是否指定了某参数
+$value$plusargs       // 检查是否将某参数指定为某值
+```
+
+根据运行时是否指定了命令行选项决定是否运行代码
+
+```verilog
+// test.v
+module test;
+  integer WIDTH;
+  initial begin
+    // 检查是否在命令行指定参数
+    if ($test$plusargs("TEST_ARG")) begin
+        $display("TEST_ARG SET");
+    end
+
+    // 从命令行获取参数 WIDTH 的值
+    if ($value$plusargs("WIDTH=%d", WIDTH)) begin
+      $display("WIDTH is set to %d", WIDTH);
+    end
+  end
+endmodule
+```
+
+```sh
+vcs test.v -TEST_ARG +WIDTH=32
+```
+
 ## 代码片段
 
 ### 定义时钟

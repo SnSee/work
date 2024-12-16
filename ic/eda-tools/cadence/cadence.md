@@ -1,14 +1,6 @@
 
 # cadence
 
-|软件 |描述
-|- |-
-|virtuoso   | layout，schematic
-|strmin     | import gds
-|strmout    | export gds
-|si         | export cdl
-|abstract   | export lef
-
 ## cds.lib
 
 在当前 cds.lib 中导入其他的 cds.lib
