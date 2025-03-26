@@ -11,6 +11,12 @@ vcs(Verilog Compiler Simulator) 是电路仿真验证工具，可以进行电路
 |-fsdb              | 生成波形文件
 |-debug_access+all  | debug 模式
 
+## 操作
+
+### 快速查找
+
+Source -> Find scope，然后选择 Module，File，Function 等
+
 ## vcs 对 verilog 进行仿真测试
 
 [eetop](https://blog.eetop.cn/blog-283296-29471.html)

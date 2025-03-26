@@ -8,3 +8,4 @@ vcs -kdb -debug_access+all test.v
 # ./simv -verdi
 # verdi -simBin "./simv" -ssf inter.fsdb
 # verdi -ssf inter.fsdb -ssdf test.sdf
+# verdi -f verilog_files.f -ssf inter.fsdb -ssdf test.sdf
