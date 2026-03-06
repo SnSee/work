@@ -515,6 +515,12 @@ fsdbDumpvars;
 
 // 记录多个变量
 fsdbDumpvars(1, clk, di, do);
+
+// dump 所有信号
+initial begin
+  $fsdbDumpfile("tb.fsdb");
+  $fsdbDumpvars(0, tb_top, "+all");
+end
 ```
 
 ### 命令行条件参数
