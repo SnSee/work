@@ -36,25 +36,6 @@ vcs -kdb -debug_access+all $verilog_files
 ./simv -verdi   # 使用 verdi 查看(推荐)
 ```
 
-## verdi
-
-命令行参数
-
-|arg | desc
-|- |-
-|f/F    | 指定含有多个 verilog 文件路径的文件
-|ssf    | 指定 fsdb/vcd 波形文件
-|mdt    | 指定 mdt 文件
-|sv     | 支持 system-verilog(IEEE 1800-2005)
-
-### 基础用法
-
-1.点击工具栏 New WaveForm
-2.将 Instance 界面被测试 instance 拖动到 Waveform 界面
-3.点击 Run Simulation 按钮开始测试
-4.在 Waveform 界面查看波形
-5.更多介绍查看 \<\<VCS QuickStart\>\> Setting up the simulation for debug 章节
-
 ## sdf 反标（sdf back-annotation）
 
 [eetop](https://blog.eetop.cn/blog-934213-53717.html)
