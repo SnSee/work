@@ -3,6 +3,223 @@
 
 PV: Performance Validation
 
+## path
+
+```yml
+vcs compile log: out/linux_3.10.0_64.VCS/navi33/config/gc/pub/sim/vcs_compile.log
+
+testcase logs:
+    path        : out/linux_3.10.0_64.VCS/navi33/config/gc/run/block/<case_name>
+    vcs         : vcs_run.log
+    compass     : gc_uvm_tb.amd_sdp_dpi_env.sdp0_data_completer_top.uvc.pv_sdp_txn.log
+    trace       : perf_compass_generic_sdptrace_replay_device-dbgu0_0_p0_65555.sdp_trc
+
+dj compass lib: out/linux_3.10.0_64.VCS/navi33/common/pub/bin/compass
+    - libcompass_debug.so
+    - libcompass_release_gprint.so
+
+perf_gpu_navi33 source:
+    dts             : src/test/compass_cfgs/variant/navi33/PV_Navi33-SoC.dts.xml
+
+perf_compass_navi33 source:
+    sdpTraceWriter  :
+        - src/package/protocolFiles/sdpprotocolFiles/sdpTraceWriter.cpp
+        - src/package/configs/sdpTraceWriter.cfg
+```
+
+## compile compass
+
+Debug Mode
+
+```dj
+// perf_gpu_navi33/src/verif/tools/stomp/stomp_compass/src/stompPerfGpuInterfaceFiles/album.dj
+
+component perf_gpu do |variant, tbtype|
+    if ENV['PERF_COMPASS_DEBUG_BUILD'].to_i == 1
+        need perf_compass::build_compass(:dll, :debug)
+    else
+        need perf_compass::build_compass(:dll, :release_gprint)
+    end
+end
+```
+
+## dj
+
+```sh
+dj [options] ...
+
+    -i              : single-step debugging
+
+    -DRUN_DV=ONLY   : skip compiling
+
+    clean           : clear workspace
+```
+
+```ruby
+component :dc do |variant...|
+    entity :my_design do
+        need register_files, test_library
+        action :build do; end
+    end
+
+    entity :register_files do; end
+    entity :test_library do; end
+end
+
+dj -v dc::my_design.build
+```
+
+```ruby
+# Define a component-type
+component :aaa do |var_arg|
+    entity :top do
+    end
+end
+
+# Instantiate a component in a design
+design :design_name do
+    # instantiate a component-instance of component-type aaa, named aaa_0
+    component aaa(:var_a), as: :aaa_0
+end
+```
+
+## DTS
+
+device topology specification
+
+```cpp
+// perf_compass_navi33/src/package/compassInfraFile/simxSharedFiles/simx_deviceManager.cpp
+
+class c_SimxDeviceManager {
+    void parseDtsFile(string x_filename) { parseDtsString(file_content); }
+    void parseDtsString(string x_buffer) {
+        XML_Parser l_parser = XML_ParserCreate(NULL);
+        XML_SetUserData(l_parser, this);
+        XML_Parse(l_parser, x_buffer);
+    }
+    void startElement(void *x_data, const char *x_element, const char *x_attr) {
+        c_SimxDeviceManager *me = x_data;
+        string l_token = x_element;
+        if (l_token == "device") { }
+        else if (l_token == "peer") { }
+        else if (l_token == "link") {
+            me->m_currLinkInfo = c_SimxDtsLinkInfo(l_type, l_dest, l_src, l_subordinating, l_name, l_options);
+        }
+    }
+    void endElement(void *x_data, const char *x_element) {
+        string token = x_element;
+        if (token == "device") {
+            me->m_currDevice = NULL;
+            me->m_buildingNullDevice = false;
+        } else if (token == "link") {
+            me->createLink(me->m_currLinkInfo);
+            me->m_currLinkInfo.type("");
+        }
+    }
+
+    c_SimxTimingLink *createLink(c_SimxDtsLinkInfo &x_info) {
+        c_SimxTimingLink *l_link = m_linkRegistry[x_info.type()]->createLink(x_info);
+        return l_link;
+    }
+};
+```
+
+```cpp
+// perf_compass_navi33/src/package/deviceFiles/socdetailedfabricdeviceFiles/sdporiginator_fabric.cpp
+
+namespace {
+    c_RegisterLink<c_SimxSdpLink> linkRegistration = c_RegisterLink<c_SimxSdpLink>("simxsdplink_fabric2umc");
+
+    c_RegisterLink<c_SimxSynchronizedSdpLink> synchronizedLinkRegistration = c_RegisterLink<c_SimxSynchronizedSdpLink>("simxsynchronizedsdplink");
+}
+```
+
+```cpp
+// perf_compass_navi33/src/package/deviceFiles/sdpcompletordeviceFiles/sdpcompletordevice.cpp
+
+/*.....................................................................*/
+// Register your devices and links with the device manager.
+// This lets it know how to create your types when it encounters your
+// strings in the DTS file.
+namespace {
+    c_RegisterDevice<c_SdpCompletorDevice> deviceRegistration = c_RegisterDevice<c_SdpCompletorDevice>("sdpcompletordevice");
+
+    c_RegisterLink<c_SimxSdpLink> linkRegistration = c_RegisterLink<c_SimxSdpLink>("simxsdplink");
+
+    c_RegisterLink<c_SimxSynchronizedSdpLink> synchronizedLinkRegistration = c_RegisterLink<c_SimxSynchronizedSdpLink>("simxsynchronizedsdplink");
+}
+```
+
+```cpp
+// perf_compass_navi33/src/package/compassInfraFiles/simxSharedFiles/simx_deviceManager.hpp
+
+template <typename T>
+inline T* c_RegisterLink<T>::createLink(c_SimxDtsLinkInfo &x_info) {
+    return new T(x_info);
+}
+```
+
+```cpp
+// perf_compass_navi33/src/package/deviceFiles/socdetailedfabricdeviceFiles/sdpcompletor_fabric.cpp
+
+class c_SdpCompletorFabric : public c_SimxStatDevice {
+    c_SdpCompletorFabric(...) {
+        // ...
+
+        x_parent->registerKnob(&m_sdpTraceWriterEnable, "sdpTraceWriterEnable");
+
+        // ...
+    }
+
+    // output file: perf_compass_generic_sdptrace_replay_device-dbgu0_0_p0_65555.sdp_trc
+    void enableSdpTraceWriter(c_SimxSdpLink *x_link, uint32 x_port) {
+        string outFileName = c_SimxKnobParser::configParser()->get_string("outFileName");
+        auto traceWriter = new c_SimxSdpTraceWriter(f"{outFileName}_{x_link->source()}_p{x_port}", getDeviceId());
+        x_link->linkController(traceWriter);
+    }
+}
+```
+
+## FTS
+
+```cpp
+// perf_compass_navi33/src/package/deviceFiles/socfabricftsdeviceFiles/socfabrictopologyspec.cpp
+
+class c_CompassSocFabricTopologyReader {
+    c_CompassSocFabricTopologySpec parseFtsFile(string x_filename) {
+        parseFtsString(file_content);
+    }
+}
+```
+
+## SDP
+
+```cpp
+// perf_compass_navi33/src/package/protocolFiles/sdpprotocolFiles/sdpLink.cpp
+
+class c_SimxSdpLink : public c_SimxTimingLink {
+    virtual void linkController(c_SimxSdpLinkController *);
+}
+```
+
+```cpp
+// perf_compass_navi33/src/package/protocolFiles/sdpprotocolFiles/sdpTraceWriter.cpp
+
+class c_SimxSdpTraceWriter : public c_SimxSdpLinkController, public c_SimxKnobParser {
+    void writeSdpRequestsToTraceFile();
+    void writeSdpResponsesToTraceFile();
+    void writeSdpDataToTraceFile();
+}
+```
+
+## test
+
+```c
+// src/test/suites/block/perf/tgl/tglFillrate/PRTtest.dv
+
+TGLPV_CB_VM_FLAT_PTE_256K(tglfillrate_c64_w_aa1)
+```
+
 ## commands
 
 ```sh
@@ -14,6 +231,16 @@ dj [OPTIONS] \
     -DGCEA_16GB
 ```
 
+## ini
+
+```sh
+-COMPASS_CMD_LINE="opt1 opt2=1 ..."
+# generated pvCompass.cfg
+
+# gpat ?
+-config=pvCompass.cfg
+```
+
 ## dv files
 
 ```c
@@ -23,8 +250,6 @@ tool.sim_gen_ini.args
 ```
 
 ### structure
-
-define(PV_ADD_COMPASS_CMDLINE, tool.sim_gen_ini.args += "-COMPASS_CMD_LINE=$1")
 
 ```yml
 src/test/suits/block/testeron/variant/navi33/test.dv:
@@ -51,8 +276,8 @@ src/test/suits/block/testeron/variant/navi33/test.dv:
 ### perf_gfx.dv
 
 ```c
-// import/perf_gpu/src/meta/flows/perf_gfx.dv
-// import/perf_gpu_navi33/src/meta/flows/perf_gfx.dv
+// perf_gpu/src/meta/flows/perf_gfx.dv
+// perf_gpu_navi33/src/meta/flows/perf_gfx.dv
 
 // -D PERF_TESTING macro is used to determine whether 
 // the sim is being run as local sim using -D macros or in GNB WebUI/XNB
@@ -417,7 +642,7 @@ define(PVTB_NV33_SETUP_GFX_IP_SDP_CMPL_ALL,
 ### perf_gpu.dv
 
 ```c
-// import/perf_gpu_navi33/src/meta/flows/perf_gpu.dv
+// perf_gpu_navi33/src/meta/flows/perf_gpu.dv
 
 include(OUT_DESIGN/pub/include/envs/global_envs.m4)
 include(OUT_DESIGN/pub/include/features/perf_gpu_features.m4)
@@ -593,7 +818,7 @@ define(PERF_SANITY,
 ### perf_gpu_variant.dv
 
 ```c
-// import/perf_gpu_navi33/src/meta/flows/variant/navi33/perf_gpu_variant.dv
+// perf_gpu_navi33/src/meta/flows/variant/navi33/perf_gpu_variant.dv
 
 define(PV_DTS_NAMING_SLICE_DTS, slice_dts)
 
@@ -734,3 +959,559 @@ define(PV_SETUP_CLK3200_PERIOD_PS,    312)
 ...
 define(PV_SETUP_CLK192_PERIOD_PS,     5102)
 ```
+
+## perf_gpu
+
+### COMPASS_CMD_LINE
+
+#### perf_gpu_uvc_init.cpp
+
+```c
+// perf_gpu_navi33/src/verif/tools/uvc_pv_req_rsp/common/c/perf_gpu_uvc_init.cpp
+
+// Providing COMPASS cmdline options(more knob settings not in yaml file)
+void setup_compass_cmdline(cCompassSimulator *simMgr) {
+    
+    float fClkGHz = (float)simMgr->getFClk() / 1000;
+    simMgr->addCompassCmdLineOptions(f"socfabricdevice-0/fabricFreqGHZ={fClkGHz:2.4f}";);
+
+    if (Medusa::Instance()->IsValidParam("COMPASS_CMD_LINE")) {
+        string cmd_line_from_simargs;
+        vector<string> vec_args;
+
+        Medusa::Instance()->GetParam("COMPASS_CMD_LINE", cmd_line_from_simargs);
+        vec_args = split(cmd_line_from_simargs, ' ');
+
+        for (auto arg : vec_args) {
+            simMgr->addCompassCmdLineOptions(arg);
+        }
+    }
+}
+
+void setup_simopts_simargs(cCompassSimulator *simMgr) {
+    // ...
+
+    // pvCompass.cfg: generated per test and provided to the COMPASS simulation
+    //      - Includes all cfg files first, followed by command line options
+    //
+    // Order of .cfg files
+    //      1. project-specific cfg files
+    //          - from pv_<variant>.yml, handled in cPvTopologyInfo class
+    //      2. link-specific cfg files
+    //          - from pv_<variant>.yml, handled in cPvTopologyInfo class
+    //          - may not exist
+    //      3. test-specific cfg files
+    //          - from test.dv, handled in setup_compass_cmdline() function
+    //
+    // Order of command line options
+    //      1. project-specific command line options
+    //          - from pv_<variant>.yml, handled in cPvTopologyInfo class
+    //      2. link-specific command line options
+    //          - from pv_<variant>.yml, handled in cPvTopologyInfo class
+    //      3. test-specific command line options
+    //          - from test.dv, handled in setup_compass_cmdline() function
+
+    // project-specific and link-specific information handled by cPvTopologyInfo class
+    string testOutDir = Medusa::Instance()->GetParamStr("out");
+    string outDesignPub = f"{env('OUT_HOME')}/{env('DJ_CONTEXT')}/common/pub";
+    string yamlDir = f"{outDesignPub}/include/init/yaml";
+    string compassCfgFile = "pvCompass.cfg";
+
+    // parse generated yaml file for perf_compass data
+    string topologyFile = f"{testOutDir}/SOCYaml_perf_compass.yml";
+    if (!path_exist(testFile)) {
+        topologyFile = "pvFinalConfig.yml";
+        // parse spcs config yaml files
+        parseSPCSConfigYaml("index.yml", topologyFile);
+    }
+    createTopology(simMgr, topologyFile);
+
+    // load the test-specific information
+    if (Medusa::Instance()->IsValidParam("PV_COMPASS_CFG_FILE")) {
+        string cfgFiles = Medusa::Instance()->GetParamStr("PV_COMPASS_CFG_FILE");
+        vector<string> fileNames = split(cfgFiles, ' ');
+        for (auto file : fileNames) {
+            simMgr->addUserCfgFiles(file);
+        }
+    }
+
+    if (Medusa::Instance()->IsValidParam("COMPASS_INFO")) {
+        string allCompassNodes = Medusa::Instance()->GetParamStr("COMPASS_INFO");
+        string simx_cmdline;
+        simx_cmdline += "gpat=All\n";
+        simx_cmdline += "gprintf=All\n";
+        simx_cmdline += f"gpatShowNodes={allCompassNodes}\n";
+        simMgr->addCompassCmdLineOptions(simx_cmdline);
+    }
+
+    // Providing COMPASS cmdline options
+    setup_compass_cmdline(simMgr);
+
+    // auto-generated .cfg file for COMPASS
+    simMgr->setTestOutDir(testOutDir);
+    simMgr->genCompassCfgFile(compassCfgFile);
+}
+```
+
+#### compass_controller.cpp
+
+```c
+// perf_gpu_navi33/src/verif/tools/uvc_pv_req_rsp/common/c/compass_controller.cpp
+
+void create_perf_model_dpi(unsigned long long _timestamp) {
+    g_pPvDebugLog = new cPvDebugLog();
+    // get debug values (perf_gpu_uvc_init.cpp)
+    setup_debug_options(g_pPvDebugLog);
+
+    // Create Compass Simulator Manager
+    g_pCompassSimManager = new cCompassSimulator();
+
+    // get simopts values (perf_gpu_uvc_init.cpp)
+    setup_simopts_simargs(g_pCompassSimManager);
+}
+
+void create_compass_model_dpi(unsigned long long _timestamp) {
+    // Create COMPASS and COMPASS Gasket
+    g_pCompassSimManager->createCompass(_timestamp);
+    g_pCompassGasket = g_pCompassSimManager->getCompassGasket();
+
+    setup_perf_model_sdp_completer();
+    setup_perf_model_sdp_originator();
+    setup_perf_model_axi_originator();
+}
+```
+
+#### compass_controller.sv
+
+```sv
+// perf_gpu_navi33/src/verif/tools/uvc_pv_req_rsp/common/sv/compass_controller.sv
+
+task compass_controller::run_perf_model();
+    ...
+
+    forever begin
+        ...
+        if (!run_once_only) begin
+            run_once_only = 1;
+            create_perf_model_dpi(timestamp);
+            create_compass_model_dpi(timestamp);
+        end
+        ...
+    end
+endtask
+
+class compass_controller extends uvm_pkg::uvm_component;
+    task run_phase(uvm_phase phase);
+        // All processes are commonly triggered through this task
+        fork
+            if (enable_compass == 1) begin
+                run_perf_model();
+            end
+        join_none
+    endtask : run_phase
+endclass : compass_controller
+```
+
+### cCompassSimulator
+
+```cpp
+// perf_gpu_navi33/src/verif/tools/uvc_pv_req_rsp/common/c/compass_simulator.cpp
+
+class cCompassSimulator {
+    void addCompassCmdLineOptions(string cmd) {
+        m_compassCmdLineOptions.push_back(cmd);
+    }
+    // 生成 pvCompass.cfg 全部内容
+    void genCompassCfgFile(string fileName) {
+        FILE *fh = fopen(fileName.c_str(), "w");
+
+        // COMPASS cfg files
+        for (string file : m_compassCfgFiles) {
+            fprintf(fh, f"#include {file}\n");
+        }
+        for (string file : m_userCfgFiles) {
+            fprintf(fh, f"#include {file}\n");
+        }
+        m_compassCfgFiles = {fileName};
+        m_userCfgFiles.resize(0);
+
+        // command line options
+        for (string arg : m_compassCmdLineOptions) {
+            fprintf(fh, f"{arg}\n")
+        }
+        m_compassCmdLineOptions.resize(0);
+        fclose(fh);
+    }
+};
+```
+
+## perf_compass
+
+```cpp
+// perf_compass_navi33/src/package/compassInfraFiles/configparserFiles/simpleConfigParser.cpp
+
+class c_SimpleConfigParser {
+    // parse config into m_entries
+    void processLine(string x_str, v_Bool x_master, v_Bool x_useStdRegex) {
+        if (x_str.match("^#include")) {
+            return parseCfgFile(...);
+        }
+        // ...
+        auto *l_newEntry = 
+            new c_SimpleConfigParserEntry(l_key, l_value, x_master,
+                                          isCmdLineOption,
+                                          get<0>(m_currentLocation.back()),
+                                          get<1>(m_currentLocation.back())
+                                          );
+        m_entries.insert(l_newEntry);
+    }
+    void parseCfgFile(string x_cfgFileName, v_Bool x_master) {
+        processLine(...);
+    }
+
+    // get value from m_entries
+    string getAsStringNoEvaluate(string x_key, bool *x_foundMatch) {
+        auto *l_entry = m_entries.find(x_key, x_foundMatch, true);
+        return l_entry ? l_entry->value() : "NO MATCH";
+    }
+
+    const c_SimpleConfigParserEntry *getMatchedEntry(string x_key, e_CfgType x_type, bool *x_foundMatch, bool x_requireMatch) {
+        auto *l_entry = m_entries.find(x_key, x_foundMatch, true);
+        return l_entry ? l_entry : nullptr;
+    }
+
+    string get_next_key() {
+        return m_simnowIter == m_entries.end() ? "" : (*m_simnowIter++)->key();
+    }
+
+
+
+    // pvCompass.cfg
+    void parseAndRemoveCfgFile(string x_cfgFileName, stringstream *x_cfgSstream) {
+        print(f"Reading master config {x_cfgFileName}");
+        // parse cfg file content into sstream
+        parseCfgFile(x_cfgSstream);
+    }
+
+    void init(bool x_ignorePowerConfigs, string x_masterConfig) {
+        stringstream ss;
+        string cfgFile = findCfgFile(x_masterConfig, true);
+        parseAndRemoveCfgFile(cfgFile, &ss);
+
+        for (auto l_setting : m_initialSettings) {
+            string &l_key = get<0>(l_setting);
+            string &l_value = get<1>(l_setting);
+            string &l_isCfgFile = get<2>(l_setting);
+
+            if (l_isCfgFile) {
+                cfgFile = findCfgFile(l_value, true);
+                parseAndRemoveCfgFile(cfgFile, &ss);
+            } else {
+                // ...
+            }
+        }
+    }
+};
+```
+
+## source files
+
+gfxip_navi33_compass/import/perf_compass_navi33/src/package
+
+### main
+
+```cpp
+// compassFiles/main.cpp
+
+static c_SimxSimulator *sim = NULL;
+
+int main() {
+    installSignalHandlers();
+    ignoreSingleSigInt(true);
+
+    sim = c_SimxSimulator::getSimulator(argc, argv);
+
+    if (sim->gestChipIntf() == nullptr) {
+        sim->setChipIntf(new c_SimxChipSimulatorIntf());
+    }
+
+    sim->setupSimxSimulator();
+
+    sim->run();
+}
+```
+
+### simulator
+
+```cpp
+// compassInfraFiles/simxSharedFiles/simx_simulator.hpp
+
+class c_SimxSimulator {
+
+    c_SimxSimulator(int argc, char **argv) {
+        registerCmdLineOptions(...);
+        __argc = argc;
+        __argv = argv;
+
+        c_SimxDebugManager::instance()->recordSimulationStart(argc, argv);
+
+        // Devices can register an optional compassInitializer method that
+        // allows them to register their own command line options
+        c_SimxDeviceManager::getDeviceManager()->executeCompassPreInitializers(this);
+
+        // Initialize the Config parser
+        parseCmdLineOptions(true, this);
+
+        ...
+    }
+
+    void run() {
+        c_SimpleConfigParser::getCfgParser()->validateKnobs();
+        writeSimspecFile(false);
+
+        v_Uint32 threads = c_SimxKnobParser::configParser()->get_int("-fastForwardTidMask");
+        v_Uint64 uinsts = c_SimxKnobParser::configParser()->get_longunit("-uinsts");
+
+        runSamplingStart(threads, uinsts);
+        runSamplingFinish();
+    }
+
+    void runSamplingStart(v_Uint32 x_fastForwardThreads, v_Uint64 x_dashInsts) {
+        // c_SimxDebugManager options
+
+        // create the sampling delegate, put it on the run queue
+        m_stateTransitionDelegate = new c_SimxTimingFunctionDelegate(
+            "simulator::sampleStateTransition",
+            ([&](c_SimxTimingCallbackArgs *x_args) {
+                c_SimxSimulator::getSimulator()->sampleStateTransition();
+            }),
+            nullptr,
+            true
+        );
+
+        m_nextFunction = e_SimxSimulator_SampleStart;
+        m_stateTransitionDelegate->enqueue(0);
+    }
+
+    void sampleStateTransition() {
+        switch (m_nextFunction) {
+        case e_SimxSimulator_SampleStart:
+            sampleStart();
+            break;
+        ...
+        }
+    }
+
+    void sampleStart() {
+        sampleStartFastForward();
+    }
+
+    c_SimxSimulator *getSimulator(int argc, char **argv) {
+        if (!s_simulator) {
+            s_simulator = new c_SimxSimulator(argc, argv);
+        }
+        return s_simulator;
+    }
+};
+```
+
+## Config
+
+### Navi33-SoC.cfg
+
+```sh
+# perf_compass_navi33/src/package/configs/Navi33-SoC.cfg
+
+# map dts type
+dtsparser/die0_simxsdplink_fabric2umc*="simxsynchronizedsdplink_fabric2umc"
+```
+
+### sdpTraceWriter.cfg
+
+```sh
+# perf_compass_navi33/src/package/configs/sdpTraceWriter.cfg
+
+socfabricdevice.*/sdpTraceWriterEnable=True
+```
+
+## logs
+
+### vcs_run.log
+
+```log
+Reading config Navi33-SoC.cfg
+Reading config ***.cfg
+
+Adding Device with Name : debugmanagermonitor-0 (device ID: 0)
+Adding Device with Name : gpat-0 (device ID: 1)
+Adding Device with Name : wallclockdevice-0 (device ID: 2)
+
+############################################
+###### Parse DTS BEGIN
+############################################
+Parsing DTS file '/**/PV_Navi33-SoC.dts.xml (c_SimxDeviceManager::parseDtsFile)
+Adding Device with Name : socfabricdevice-0 (device ID: 3)
+Parsing FTS file '/**/PV_Navi33-Die0.fts.xml
+
+***** DF StallCode Decoder *****
+...
+
+Init: dit0_tcdx0: device ID 0x30000
+...
+Init: dit0_tcdx15: device ID 0x3000f
+
+Connecting die0_tcdx0 To die0_tcdx1
+Topology: die0_tcdx0:0.0<->die0_tcdx1:0.0
+Topology: die0_tcdx1:0.0<->die0_tcdx0:0.0
+...
+
+CS -> PF Map:
+...
+
+Flow Control: Linking ...->... port 0 cmdCh=0
+Creating data channel 0 token return link from ... to ..., latency=2
+Creating cmd token return link from ... to ..., latency=2
+Reseting data channel 0 token return link from ... to ..., latency=2
+Reseting cmd token return link from ... to ..., latency=2
+
+cmd0 die0_tcdx0 all bypasses enabled
+...
+BYPASS: Bypass config fro die0_tcdx0
+BYPASS:  cmd0 (Req)
+BYPASS:    in:die0_tcdx1, out:die0_tcdx1, en: 0
+BYPASS:    in:die0_tcdx1, out:die0_tcdx4, en: 1
+BYPASS:    in:die0_tcdx4, out:die0_tcdx1, en: 1
+BYPASS:    in:die0_tcdx4, out:die0_tcdx4, en: 0
+
+<name> created 1 command tokens: channel=Req, type=Hard, Priority=NumPriorities, VC_UpstreamRead, owner=<name>
+...
+
+Req routing table for die0_tcdx0
+ die0_gcm0 device id 0x10000 -> part 1 sublink 0
+ ...
+...
+Rsp routing table for die0_tcdx4
+ die0_gcm0 device id 0x10000 -> part 1 sublink 0
+ ...
+...
+Prb routing table for die0_tcdx9
+ die0_gcm0 device id 0x10000 -> part 1 sublink 0
+ ...
+...
+Initiating traceroute from die0_gcm0 to die0_cs4 (Req channel)
+  Hop 0. die0_gcm0 goes to die0_tcdx14:2
+  ...
+Complete.
+...
+
+PrbRoutingTableKnob="die0_cs0->die0_tcdx14->die0_gcm0,..."
+
+############################################
+###### Add device umc15device-die0-0 BEGIN
+############################################
+Adding Device with Name : umc15device-die0-0 (device ID: 4)
+UMC=umc15device-die0-0
+PHY=GNL_PHY
+DRAM=gddr6_16000_26_31_30
+k_PwrDownDly=45
+cs capacity = 1024 MB
+rank capacity = 1024 MB
+device capacity = 8192 Mb
+===floating address map===
+Total memory regions:0
+NA= 5, Co= 0
+...
+NA=10, BK= 0
+...
+NA=16, Ro= 0
+...
+
+BK[ 0] = NA[10] ^ NA[19] ^ NA[23] ^ NA[24] ^ NA[28]
+...
+Ro[ 0] = NA[16]
+...
+Co[ 0] = NA[ 5]
+...
+
+umc15device-die0-0/gddr6_16000_26_31_30/dram/finalnumColBits=7
+umc15device-die0-0/gddr6_16000_26_31_30/dram/finalnumRowBits=7
+...
+Address Map is valid
+Total number of rank=1 dimm=1, cs=1, rm=1
+channel:0 rank:0 dimm:0 cs:0 rm:0 dimmType:DRAM
+
+===start DRAM timing print===
+casLatency              tCL         = 26
+writeLatency            tCWL        = 8
+...
+===end DRAM timing print===
+
+DRAM Mclk frequency=2000
+DGGR6-16000 26-31-30
+2DRAM clock cycles to read/write 32 Bytes of data
+channel num=1
+channel map=8
+per rank refresh groups=1
+per refresh group banks=16
+m_dramFreqMHz=2000
+LoopBack: UCLKs/CAS=4
+resizing m_AggrPDCountDownInitiated to 1 each
+############################################
+###### Add device umc15device-die0-0 END
+############################################
+ 
+############################################
+###### Add other devices
+############################################
+
+
+
+Adding Device with Name : generic_sdptrace_replay_device-gfx-die0-0 (device ID: 12)
+...
+Adding Device with Name : generic_sdptrace_replay_device-lsdma_1 (device ID: 56)
+############################################
+###### Parse DTS END
+############################################
+
+Creating analyzer skyNet-0
+```
+
+## trace logs
+
+perf_compass_generic_sdptrace_replay_device-dbgu0_0_p0_65555.sdp_trc
+
+```log
+// StartHeader
+// Version: COMPASS SimxSdpTraceWriter
+// Date: 2026-03-19
+// time_uint: 1000fs
+// Client: perf_compass_generic_sdptrace_replay_device-dbgu0_0_p0
+// Rev: unknown
+// Command line:
+// EndHeader
+```
+
+## pictures
+
+```mermaid
+flowchart TB
+    subgraph perf_gpu_navi33
+        create_compass_model_dpi -->
+        cCompassSimulator::createCompass -->
+        cPvUvcGasket::createCompass -->
+        cPvCompassGasket::createCompass
+    end
+
+    subgraph perf_compass_navi33
+        c_SimxSimulator::setupSimxSimulator -->
+        c_SimxSimulator::init -->
+        c_SimxDeviceManager::setupDevices
+    end
+
+    cPvCompassGasket::createCompass --> c_SimxSimulator::setupSimxSimulator
+```
+
+## TODO
+
+1. 你先了解一下，怎么通过读配置生成整个design(读DTS生成整个compass的top level design)
+   抓这8条sdkLink的trace
