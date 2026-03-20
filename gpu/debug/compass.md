@@ -7,12 +7,14 @@ PV: Performance Validation
 
 ```yml
 vcs compile log: out/linux_3.10.0_64.VCS/navi33/config/gc/pub/sim/vcs_compile.log
+yml configs    : src/test/suites/block/testeron/variant/navi33
 
 testcase logs:
     path        : out/linux_3.10.0_64.VCS/navi33/config/gc/run/block/<case_name>
     vcs         : vcs_run.log
     compass     : gc_uvm_tb.amd_sdp_dpi_env.sdp0_data_completer_top.uvc.pv_sdp_txn.log
     trace       : perf_compass_generic_sdptrace_replay_device-dbgu0_0_p0_65555.sdp_trc
+    pvFinalConfig: pvFinalConfig.yml
 
 dj compass lib: out/linux_3.10.0_64.VCS/navi33/common/pub/bin/compass
     - libcompass_debug.so
@@ -20,6 +22,7 @@ dj compass lib: out/linux_3.10.0_64.VCS/navi33/common/pub/bin/compass
 
 perf_gpu_navi33 source:
     dts             : src/test/compass_cfgs/variant/navi33/PV_Navi33-SoC.dts.xml
+    README_yml      : src/meta/flows/variant/README_yml
 
 perf_compass_navi33 source:
     sdpTraceWriter  :
@@ -210,6 +213,29 @@ class c_SimxSdpTraceWriter : public c_SimxSdpLinkController, public c_SimxKnobPa
     void writeSdpResponsesToTraceFile();
     void writeSdpDataToTraceFile();
 }
+```
+
+## Monitor
+
+```cpp
+// perf_gpu_navi33/src/verif/tools/stomp/stomp_compass/src/stompPerfGpuInterfaceFiles/device_monitor_base.cpp
+
+class cDeviceMonitorBase {
+    cDeviceMonitorBase(string deviceName, string linkName, ...);
+};
+
+// perf_gpu_navi33/src/verif/tools/stomp/stomp_compass/src/stompPerfGpuInterfaceFiles/device_monitor_sdp_cmpl.cpp
+class cDeviceMonitorSdpCmpl : public cDeviceMonitorBase {
+
+};
+```
+
+```mermaid
+flowchart TB
+    cCompassSimulator::createCompass -->
+    cCompassSimulator::createUvc2LinkConnection -->
+    cPvCompassGasket::createDeviceMonitor -->
+    cDeviceMonitorSdpCmpl::cDeviceMonitorSdpCmpl
 ```
 
 ## test
@@ -1509,6 +1535,42 @@ flowchart TB
     end
 
     cPvCompassGasket::createCompass --> c_SimxSimulator::setupSimxSimulator
+```
+
+## DEBUG NOTES
+
+### duplicated link controller
+
+link_name: die0_gcm0_sdplink
+
+```mermaid
+flowchart TB
+    create_compass_model_dpi -->
+    cCompassSimulator::createCompass -->
+    c_SimxSimulator::setupSimxSimulator -->
+    c_SimxSimulator::init -->
+    c_SimxDetSocFabricTimingDevice::registerCmIpSdpLink -->
+    c_MasterBase::setSdpLink
+
+    subgraph sdpTraceWriterEnable["sdpTraceWriterEnable=True"]
+        c_SdpCompletorFabric::enableSdpTraceWriter
+    end
+
+    c_MasterBase::setSdpLink -->
+    c_SdpCompletorFabric::enableSdpTraceWriter -->
+    c_SimxSynchronizedSdpLink::linkController
+
+
+    subgraph compassGasket
+        cPvCompassGasket::initializeDeviceMonitors
+    end
+
+    cCompassSimulator::createCompass --> cPvCompassGasket::initializeDeviceMonitors
+
+    cPvCompassGasket::initializeDeviceMonitors -->
+    cDeviceMonitorBase::initializeDeviceMonitor -->
+    cDeviceMonitorSdpCmpl::createLinkControllers -->
+    cDeviceMonitorSdpCmpl::setLinkControllers --> c_SimxSynchronizedSdpLink::linkController
 ```
 
 ## TODO
